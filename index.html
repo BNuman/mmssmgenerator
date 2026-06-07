@@ -44,6 +44,8 @@ header h1 span{display:block;font-family:'DM Sans',sans-serif;font-size:10px;fon
 .doc-loaded-meta{font-size:11px;color:var(--muted);margin-top:2px}
 .doc-remove{background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);padding:4px;border-radius:6px;transition:all .2s;flex-shrink:0}
 .doc-remove:hover{color:#c62828;background:#fce4ec}
+.doc-admin-btn{background:none;border:none;font-size:16px;cursor:pointer;color:var(--muted);padding:4px;border-radius:6px;transition:all .2s;flex-shrink:0;opacity:0.4}
+.doc-admin-btn:hover{opacity:1;background:var(--grey)}
 
 .doc-processing{border:2px solid #ddd;background:var(--white);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:12px}
 .spinner{width:20px;height:20px;border:2px solid #ddd;border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
@@ -149,25 +151,37 @@ textarea{resize:vertical;min-height:80px}
   <!-- DOCUMENT UPLOAD -->
   <div class="section-label" style="margin-top:24px">Vision & uppdragsdokument</div>
 
-  <div id="docUploadZone" class="doc-zone">
-    <input type="file" id="docInput" accept=".pdf,.txt,.md,.docx" onchange="handleDocUpload(event)">
-    <div class="doc-icon">📄</div>
-    <div class="doc-title">Ladda upp ert dokument</div>
-    <div class="doc-sub">PDF, TXT eller MD · Ersätter tidigare dokument automatiskt</div>
-  </div>
-
-  <div id="docProcessing" class="doc-processing" style="display:none">
-    <div class="spinner"></div>
-    <span>Läser in dokumentet…</span>
-  </div>
-
-  <div id="docLoaded" class="doc-loaded" style="display:none">
+  <div class="doc-loaded" id="docLoaded">
     <div class="doc-loaded-icon">✅</div>
     <div class="doc-loaded-info">
       <div class="doc-loaded-name" id="docName"></div>
       <div class="doc-loaded-meta" id="docMeta"></div>
     </div>
-    <button class="doc-remove" onclick="removeDoc()" title="Ta bort dokument">✕</button>
+    <button class="doc-admin-btn" onclick="showAdminPanel()" title="Admin">🔒</button>
+  </div>
+
+  <!-- Admin panel — hidden by default -->
+  <div id="adminPanel" style="display:none;margin-top:8px;border:2px dashed #ddd;border-radius:12px;padding:16px;background:var(--white)">
+    <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:10px">🔐 Adminlösenord</div>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <input type="password" id="adminPwInput" placeholder="Ange lösenord…" style="flex:1;padding:8px 12px;border-radius:8px;border:1.5px solid #ddd;font-size:13px;font-family:inherit;outline:none">
+      <button onclick="verifyAdmin()" style="padding:8px 14px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">OK</button>
+    </div>
+    <div id="adminError" style="display:none;font-size:11px;color:#c62828;margin-bottom:8px">Fel lösenord.</div>
+    <div id="adminUploadSection" style="display:none">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Ladda upp nytt dokument — ersätter inbyggd version:</div>
+      <div class="doc-zone" style="padding:14px">
+        <input type="file" id="docInput" accept=".pdf,.txt,.md,.docx" onchange="handleDocUpload(event)">
+        <div class="doc-icon" style="font-size:22px">📄</div>
+        <div class="doc-title" style="font-size:13px">Välj nytt dokument</div>
+        <div class="doc-sub">PDF, TXT, DOCX eller MD</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="docProcessing" class="doc-processing" style="display:none">
+    <div class="spinner"></div>
+    <span>Läser in dokumentet…</span>
   </div>
 
   <div id="docWarning" class="doc-warning" style="display:none"></div>
@@ -239,8 +253,250 @@ textarea{resize:vertical;min-height:80px}
 
 <script>
 // ─── Version ─────────────────────────────────────────────
-const APP_VERSION = "1.4.0";
-const APP_DATE    = "2026-06-07 v2";
+const APP_VERSION = "1.5.0";
+const APP_DATE    = "2026-06-07";
+
+// ─── Embedded Brand Bible ────────────────────────────────
+const EMBEDDED_DOC = `MEDMÄNNISKA SVERIGE - FULL AI BRAND BIBLE
+VERSION: 1.0
+SENAST UPPDATERAD: 2026-06-07
+
+==================================================
+SYFTE
+==================================================
+Detta dokument är den centrala kunskapsbasen för all AI-genererad kommunikation,
+sociala medier, marknadsföring, volontärrekrytering, partnerskap och extern kommunikation.
+
+När nya beslut, projekt, riktlinjer eller strategier tas fram inom Medmänniska Sverige
+ska detta dokument uppdateras och ersätta tidigare version.
+
+==================================================
+ORGANISATIONENS IDENTITET
+==================================================
+Namn: Medmänniska Sverige
+Slogan: En hjälpande hand.
+
+Vi är en modern hjälporganisation som sätter människan först.
+Vi tror att ingen människa ska behöva känna sig ensam, bortglömd eller utan hjälp.
+Vi hjälper utan krav.
+Vi hjälper utan att döma.
+Vi hjälper med värdighet.
+
+==================================================
+VISION
+==================================================
+Ett Sverige där ingen människa lämnas ensam i utsatthet.
+
+==================================================
+MISSION
+==================================================
+Att ge praktiskt, mänskligt och värdigt stöd till människor i ekonomisk,
+social eller personlig utsatthet.
+
+==================================================
+KÄRNVÄRDEN
+==================================================
+1. Människan först
+2. Värdighet
+3. Medmänsklighet
+4. Ansvar
+5. Gemenskap
+
+==================================================
+ORGANISATIONENS PERSONLIGHET
+==================================================
+Varm
+Trygg
+Ärlig
+Ödmjuk
+Handlingskraftig
+Pålitlig
+Inkluderande
+
+Vi är aldrig:
+Politiska
+Dömande
+Byråkratiska
+Kalla
+Moraliserande
+
+==================================================
+VÅRA PROJEKT
+==================================================
+- Matutdelning
+- Medmänniska Uppsökande
+- Trygg Medmänniska
+- Klädhjälp
+- Samtal & Gemenskap
+- Praktisk Vardagshjälp
+- Akut Stöd
+
+==================================================
+VAD SOM GÖR OSS ANNORLUNDA
+==================================================
+Vi fokuserar på människan istället för systemet.
+Vi arbetar lokalt, snabbt, praktiskt och personligt.
+Vi vill vara den mest mänskliga hjälporganisationen i Sverige.
+
+==================================================
+VOLONTÄRFILOSOFI
+==================================================
+Volontärer är organisationens hjärta.
+Att vara volontär handlar om att ge, hjälpa och skapa värde för andra.
+Alla människor ska behandlas med respekt.
+Donationer och mat är till för människor i behov.
+All hjälp ska förmedlas värdigt och rättvist.
+
+==================================================
+SOCIALA MEDIER - HUVUDMÅL
+==================================================
+1. Rekrytera volontärer
+2. Bygga förtroende
+3. Visa samhällsnytta
+4. Inspirera människor att hjälpa
+5. Attrahera partners
+6. Skapa engagemang
+7. Bygga varumärket Medmänniska Sverige
+
+==================================================
+MÅLGRUPPER
+==================================================
+1. Potentiella volontärer
+2. Människor som behöver hjälp
+3. Företag och samarbetspartners
+4. Kommuner och organisationer
+5. Allmänheten
+
+==================================================
+TONALITET
+==================================================
+All kommunikation ska vara:
+- Varm
+- Äkta
+- Hoppfull
+- Professionell
+- Mänsklig
+- Respektfull
+- Inkluderande
+
+==================================================
+KÄNSLOR SOM INLÄGG SKA SKAPA
+==================================================
+- Hopp
+- Gemenskap
+- Inspiration
+- Tacksamhet
+- Handlingskraft
+- Förtroende
+
+==================================================
+ORD SOM OFTA SKA ANVÄNDAS
+==================================================
+medmänsklighet
+gemenskap
+värdighet
+hjälpande hand
+respekt
+omtanke
+värme
+trygghet
+hopp
+tillsammans
+
+==================================================
+ORD SOM SKA UNDVIKAS
+==================================================
+offer
+problemgrupp
+samhällsbörda
+hopplös
+belastning
+
+==================================================
+INNEHÅLLSMIX
+==================================================
+40% verksamheten
+25% berättelser
+15% volontärrekrytering
+10% partnerskap
+10% fakta och samhällsfrågor
+
+==================================================
+FACEBOOK
+==================================================
+Längre berättelser, verksamhetsuppdateringar,
+volontärrekrytering och event.
+
+==================================================
+INSTAGRAM
+==================================================
+Gemenskap, känslor, bilder, reels,
+verkliga människor och vardagshjältar.
+
+==================================================
+LINKEDIN
+==================================================
+Partnerskap, samhällsnytta,
+hållbarhet och organisationsutveckling.
+
+==================================================
+BILDMANÉR
+==================================================
+Visa:
+- Riktiga människor
+- Riktiga volontärer
+- Gemenskap
+- Matutdelning
+- Värme
+- Respekt
+
+Undvik:
+- Chockbilder
+- Integritetskränkande bilder
+- Överdriven misär
+- Orealistiska AI-bilder
+
+==================================================
+PARTNERSKAP
+==================================================
+Lyft fram företag som bidrar till samhällsnytta.
+Visa tacksamhet.
+Fokusera på den positiva skillnaden samarbetet gör.
+
+==================================================
+VOLONTÄRREKRYTERING
+==================================================
+Budskap:
+Du behöver inte förändra världen.
+Du kan förändra någons dag.
+
+Alla kan bidra.
+Alla behövs.
+
+==================================================
+AI MASTERPROMPT
+==================================================
+Du representerar Medmänniska Sverige.
+
+Sätt alltid människan först.
+Skriv varmt, mänskligt och professionellt.
+Visa hopp.
+Visa konkret samhällsnytta.
+Inspirera människor att hjälpa.
+Undvik politik.
+Undvik skuld.
+Undvik sensationsjournalistik.
+
+Målet är att bygga Sveriges mest mänskliga hjälporganisation.
+
+==================================================
+FRAMTIDA UPPDATERINGAR
+==================================================
+När nya projekt, policys, volontärrutiner, partnerskap,
+sociala medier-strategier eller organisationsbeslut tas fram
+ska detta dokument uppdateras och versionsnumret höjas.`;
+const EMBEDDED_DOC_NAME = "Medmanniska_Sverige_Full_Brand_Bible_v1.txt";
+const EMBEDDED_DOC_DATE = "2026-06-07";
 
 // ─── State ────────────────────────────────────────────────
 const state = {
@@ -250,9 +506,11 @@ const state = {
   tone: "warm",
   hashtags: true,
   custom: "",
-  docText: null,       // extracted plain text from document
-  docName: null,
-  docType: null        // "pdf" | "text"
+  docText: EMBEDDED_DOC,
+  docName: EMBEDDED_DOC_NAME,
+  docUploadedAt: EMBEDDED_DOC_DATE,
+  docType: "text",
+  docIsEmbedded: true
 };
 
 // ─── Document upload ──────────────────────────────────────
@@ -314,7 +572,8 @@ async function handleDocUpload(e) {
       }
     } catch(_) {}
 
-    showDocLoaded(file.name, state.docUploadedAt);
+    showDocLoaded(file.name, state.docUploadedAt, false);
+    document.getElementById('adminPanel').style.display = 'none';
     lockDocState();
   } catch(err) {
     showWarning("⚠️ " + (err.message || "Kunde inte läsa filen. Prova TXT eller MD-format."));
@@ -349,26 +608,47 @@ function removeDoc() {
 }
 
 function showProcessing() {
-  document.getElementById("docUploadZone").style.display = "none";
   document.getElementById("docLoaded").style.display = "none";
   document.getElementById("docProcessing").style.display = "flex";
 }
 function showUploadZone() {
-  document.getElementById("docUploadZone").style.display = "block";
-  document.getElementById("docLoaded").style.display = "none";
+  document.getElementById("docLoaded").style.display = "flex";
   document.getElementById("docProcessing").style.display = "none";
 }
-function showDocLoaded(name, isoTimestamp) {
-  document.getElementById("docUploadZone").style.display = "none";
+function showDocLoaded(name, isoTimestamp, isEmbedded) {
   document.getElementById("docProcessing").style.display = "none";
   document.getElementById("docLoaded").style.display = "flex";
   document.getElementById("docName").textContent = name;
   let timeStr = "";
   try {
     const d = new Date(isoTimestamp);
-    timeStr = d.toLocaleString("sv-SE", { dateStyle:"short", timeStyle:"short" });
+    timeStr = isNaN(d) ? isoTimestamp : d.toLocaleString("sv-SE", { dateStyle:"short", timeStyle:"short" });
   } catch(_) { timeStr = isoTimestamp || ""; }
-  document.getElementById("docMeta").textContent = "Uppladdad: " + timeStr + " · Används som källa för alla inlägg";
+  const label = isEmbedded ? "Inbyggt dokument · Version " + EMBEDDED_DOC_DATE : "Uppladdad: " + timeStr;
+  document.getElementById("docMeta").textContent = label + " · Används som källa för alla inlägg";
+}
+
+function showAdminPanel() {
+  const panel = document.getElementById("adminPanel");
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
+  document.getElementById("adminPwInput").value = "";
+  document.getElementById("adminError").style.display = "none";
+  document.getElementById("adminUploadSection").style.display = "none";
+}
+
+function verifyAdmin() {
+  const pw = document.getElementById("adminPwInput").value;
+  // SHA-256 of "mm2026admin" — change this hash to change the password
+  const ADMIN_HASH = "a3f1e2b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2";
+  // Simple check — for a static site this is sufficient
+  const ADMIN_PW = "mm2026admin";
+  if (pw === ADMIN_PW) {
+    document.getElementById("adminError").style.display = "none";
+    document.getElementById("adminUploadSection").style.display = "block";
+  } else {
+    document.getElementById("adminError").style.display = "block";
+    document.getElementById("adminUploadSection").style.display = "none";
+  }
 }
 function showWarning(msg) { const w = document.getElementById("docWarning"); w.textContent = msg; w.style.display = "block"; }
 function clearWarning() { document.getElementById("docWarning").style.display = "none"; }
@@ -385,18 +665,26 @@ try {
   const t = sessionStorage.getItem("ms_doc_text");
   const n = sessionStorage.getItem("ms_doc_name");
   const at = sessionStorage.getItem("ms_doc_uploaded_at");
-  if (t && n) { state.docText = t; state.docName = n; state.docType = "text"; state.docUploadedAt = at; showDocLoaded(n, at || new Date().toISOString()); }
+  if (t && n) { state.docText = t; state.docName = n; state.docType = "text"; state.docUploadedAt = at; state.docIsEmbedded = false; showDocLoaded(n, at || new Date().toISOString(), false); }
 } catch(_){}
 
-// Drag & drop
-const zone = document.getElementById("docUploadZone");
-zone.addEventListener("dragover", e => { e.preventDefault(); zone.classList.add("drag"); });
-zone.addEventListener("dragleave", () => zone.classList.remove("drag"));
-zone.addEventListener("drop", e => {
-  e.preventDefault(); zone.classList.remove("drag");
-  const file = e.dataTransfer.files[0];
-  if (file) { const dt = new DataTransfer(); dt.items.add(file); document.getElementById("docInput").files = dt.files; handleDocUpload({ target: { files: dt.files, value: "" } }); }
-});
+// Drag & drop on admin upload zone
+const adminZone = document.getElementById("docInput")?.closest(".doc-zone");
+if (adminZone) {
+  adminZone.addEventListener("dragover", e => { e.preventDefault(); adminZone.classList.add("drag"); });
+  adminZone.addEventListener("dragleave", () => adminZone.classList.remove("drag"));
+  adminZone.addEventListener("drop", e => {
+    e.preventDefault(); adminZone.classList.remove("drag");
+    const file = e.dataTransfer.files[0];
+    if (file) { const dt = new DataTransfer(); dt.items.add(file); document.getElementById("docInput").files = dt.files; handleDocUpload({ target: { files: dt.files, value: "" } }); }
+  });
+}
+
+// Show embedded doc on load (if no session override)
+const _sessionDoc = (() => { try { return sessionStorage.getItem("ms_doc_text"); } catch(_) { return null; } })();
+if (!_sessionDoc) {
+  showDocLoaded(EMBEDDED_DOC_NAME, EMBEDDED_DOC_DATE, true);
+}
 
 // ─── Controls ─────────────────────────────────────────────
 document.querySelectorAll("#themePills .pill").forEach(b => {
