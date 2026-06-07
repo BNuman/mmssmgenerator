@@ -133,6 +133,7 @@ textarea{resize:vertical;min-height:80px}
     </svg>
   </div>
   <h1>Medmänniska Sverige<span>Inläggsgenerator</span></h1>
+  <div id="versionBadge" style="margin-left:auto;font-size:10px;color:var(--muted);background:var(--grey);padding:4px 10px;border-radius:50px;white-space:nowrap;flex-shrink:0"></div>
 </header>
 
 <div class="wrap">
@@ -237,6 +238,10 @@ textarea{resize:vertical;min-height:80px}
 </div>
 
 <script>
+// ─── Version ─────────────────────────────────────────────
+const APP_VERSION = "1.4.0";
+const APP_DATE    = "2026-06-07 v2";
+
 // ─── State ────────────────────────────────────────────────
 const state = {
   theme: "food",
@@ -367,6 +372,9 @@ function showDocLoaded(name, isoTimestamp) {
 }
 function showWarning(msg) { const w = document.getElementById("docWarning"); w.textContent = msg; w.style.display = "block"; }
 function clearWarning() { document.getElementById("docWarning").style.display = "none"; }
+
+// Set version badge
+document.getElementById("versionBadge").textContent = "v" + APP_VERSION + " · " + APP_DATE;
 
 // Restore from session
 try {
@@ -500,9 +508,9 @@ Ton: ${TONE_MAP[state.tone]}
 ${hashLine}
 ${customLine}
 
-Generera ETT inlägg per angiven plattform.
-VIKTIGT: Svara ENBART med ett giltigt JSON-objekt. Ingen inledning, inga kommentarer, ingen markdown. Håll varje inlägg under 800 tecken.
-Format: {"posts":[{"platform":"instagram","text":"...","hashtags":"#tag1 #tag2"},{"platform":"facebook","text":"...","hashtags":"#tag1 #tag2"}]}`;
+Generera ETT kort inlägg (max 400 tecken) per angiven plattform.
+Svara ENBART med detta JSON, ingenting annat:
+{"posts":[{"platform":"instagram","text":"INLÄGGSTEXT HÄR","hashtags":"#tag1 #tag2 #tag3"},{"platform":"facebook","text":"INLÄGGSTEXT HÄR","hashtags":"#tag1 #tag2 #tag3"}]}`;
 
   // Build messages — if PDF, send as document block
   let messages;
@@ -526,7 +534,7 @@ Format: {"posts":[{"platform":"instagram","text":"...","hashtags":"#tag1 #tag2"}
     const geminiBody = {
       system_instruction: { parts: [{ text: baseSystem + docSection }] },
       contents: [],
-      generationConfig: { temperature: 0.9, maxOutputTokens: 2000, responseMimeType: 'application/json' }
+      generationConfig: { temperature: 0.7, maxOutputTokens: 2500 }
     };
 
     // Build content parts
@@ -539,16 +547,38 @@ Format: {"posts":[{"platform":"instagram","text":"...","hashtags":"#tag1 #tag2"}
     }
     geminiBody.contents.push({ role: "user", parts });
 
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,
-      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(geminiBody) }
-    );
+    // Try primary model, fallback to gemini-2.0-flash on overload
+    const models = ["gemini-2.5-flash", "gemini-2.0-flash"];
+    let data, lastError;
+
+    for (let attempt = 0; attempt < models.length; attempt++) {
+      const model = models[attempt];
+      if (attempt > 0) {
+        btn.textContent = `⏳ Försöker reservmodell…`;
+        await new Promise(r => setTimeout(r, 2000));
+      }
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
+        { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(geminiBody) }
+      );
+      data = await res.json();
+      if (data.error) {
+        const msg = data.error.message || "";
+        // If overloaded or quota, try next model
+        if (msg.toLowerCase().includes("demand") || msg.includes("429") || msg.includes("quota") || res.status === 429 || res.status === 503) {
+          lastError = msg;
+          continue;
+        }
+        throw new Error(msg || JSON.stringify(data.error));
+      }
+      lastError = null;
+      break;
+    }
 
     // Wipe PDF base64 immediately after send
     if (state._pdfBase64) state._pdfBase64 = null;
 
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+    if (lastError) throw new Error("Gemini är överbelastad just nu — försök igen om en stund.");
 
     // Check finish reason
     const finishReason = data.candidates?.[0]?.finishReason;
