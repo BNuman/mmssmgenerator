@@ -75,13 +75,6 @@ textarea{resize:vertical;min-height:80px}
 .toggle.on{background:var(--red)}
 .toggle.on::after{transform:translateX(20px)}
 
-.api-key-wrap{display:flex;gap:0;border:1.5px solid #ddd;border-radius:10px;overflow:hidden;background:var(--white);transition:border-color .2s}
-.api-key-wrap:focus-within{border-color:var(--red)}
-.api-key-input{flex:1;padding:10px 14px;border:none;font-size:14px;font-family:inherit;color:var(--text);background:transparent;outline:none;min-width:0}
-.api-key-toggle{background:var(--grey);border:none;padding:0 14px;cursor:pointer;font-size:16px;transition:background .2s}
-.api-key-toggle:hover{background:#e0deda}
-.api-key-hint{font-size:11px;color:var(--muted);margin-top:6px}
-.api-key-hint a{color:var(--navy);text-decoration:underline}
 .gen-btn{width:100%;padding:15px;background:var(--red);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;margin-top:24px;transition:all .2s;letter-spacing:.02em}
 .gen-btn:hover:not(:disabled){background:#b82020;transform:translateY(-1px);box-shadow:0 6px 20px rgba(212,43,43,.3)}
 .gen-btn:disabled{background:#ccc;cursor:not-allowed}
@@ -177,6 +170,16 @@ textarea{resize:vertical;min-height:80px}
         <div class="doc-sub">PDF, TXT, DOCX eller MD</div>
       </div>
     </div>
+    <div style="margin-top:14px;border-top:1px solid #f0eeeb;padding-top:14px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Gemini API-nyckel (sparas i webbläsaren):</div>
+      <div style="display:flex;gap:8px">
+        <input type="password" id="adminApiKeyInput" placeholder="AIza…" autocomplete="off"
+          style="flex:1;padding:8px 12px;border-radius:8px;border:1.5px solid #ddd;font-size:13px;font-family:inherit;outline:none">
+        <button onclick="saveApiKey()" style="padding:8px 14px;background:var(--red);color:white;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Spara</button>
+      </div>
+      <div id="apiKeySaved" style="display:none;font-size:11px;color:#2E7D32;margin-top:6px">✓ Nyckel sparad — teamet behöver inte ange den.</div>
+      <div id="apiKeyStatus" style="font-size:11px;margin-top:6px;color:var(--muted)"></div>
+    </div>
   </div>
 
   <div id="docProcessing" class="doc-processing" style="display:none">
@@ -225,14 +228,8 @@ textarea{resize:vertical;min-height:80px}
     <button class="toggle on" id="hashToggle"></button>
   </div>
 
-  <div class="section-label">Gemini API-nyckel</div>
-  <div class="api-key-wrap">
-    <input type="password" id="apiKeyInput" class="api-key-input" placeholder="Klistra in din Gemini API-nyckel här…" autocomplete="off" spellcheck="false">
-    <button class="api-key-toggle" onclick="toggleKey()" id="keyToggle" title="Visa/dölj">👁</button>
-  </div>
-  <div class="api-key-hint">
-    Hämta gratis nyckel på <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com</a> · Inget kreditkort krävs
-  </div>
+  <!-- API key hidden input — populated from sessionStorage -->
+  <input type="hidden" id="apiKeyInput">
 
   <button class="gen-btn" id="genBtn">✨ Generera inlägg</button>
 
@@ -253,7 +250,7 @@ textarea{resize:vertical;min-height:80px}
 
 <script>
 // ─── Version ─────────────────────────────────────────────
-const APP_VERSION = "1.5.0";
+const APP_VERSION = "1.6.0";
 const APP_DATE    = "2026-06-07";
 
 // ─── Embedded Brand Bible ────────────────────────────────
@@ -638,17 +635,40 @@ function showAdminPanel() {
 
 function verifyAdmin() {
   const pw = document.getElementById("adminPwInput").value;
-  // SHA-256 of "mm2026admin" — change this hash to change the password
-  const ADMIN_HASH = "a3f1e2b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2";
-  // Simple check — for a static site this is sufficient
   const ADMIN_PW = "mm2026admin";
   if (pw === ADMIN_PW) {
     document.getElementById("adminError").style.display = "none";
     document.getElementById("adminUploadSection").style.display = "block";
+    // Show current key status
+    const existingKey = sessionStorage.getItem("ms_gemini_key") || localStorage.getItem("ms_gemini_key");
+    const statusEl = document.getElementById("apiKeyStatus");
+    if (existingKey) {
+      statusEl.textContent = "✓ Nyckel redan sparad: " + existingKey.slice(0,8) + "…";
+      statusEl.style.color = "#2E7D32";
+    } else {
+      statusEl.textContent = "Ingen nyckel sparad ännu.";
+      statusEl.style.color = "#E07060";
+    }
   } else {
     document.getElementById("adminError").style.display = "block";
     document.getElementById("adminUploadSection").style.display = "none";
   }
+}
+
+function saveApiKey() {
+  const key = document.getElementById("adminApiKeyInput").value.trim();
+  if (!key) return;
+  // Save to both sessionStorage and localStorage so it persists across sessions
+  try { sessionStorage.setItem("ms_gemini_key", key); } catch(_) {}
+  try { localStorage.setItem("ms_gemini_key", key); } catch(_) {}
+  // Also update the hidden input so generate() works immediately
+  document.getElementById("apiKeyInput").value = key;
+  document.getElementById("adminApiKeyInput").value = "";
+  document.getElementById("apiKeySaved").style.display = "block";
+  const statusEl = document.getElementById("apiKeyStatus");
+  statusEl.textContent = "✓ Nyckel sparad: " + key.slice(0,8) + "…";
+  statusEl.style.color = "#2E7D32";
+  setTimeout(() => { document.getElementById("apiKeySaved").style.display = "none"; }, 3000);
 }
 function showWarning(msg) { const w = document.getElementById("docWarning"); w.textContent = msg; w.style.display = "block"; }
 function clearWarning() { document.getElementById("docWarning").style.display = "none"; }
@@ -656,10 +676,14 @@ function clearWarning() { document.getElementById("docWarning").style.display = 
 // Set version badge
 document.getElementById("versionBadge").textContent = "v" + APP_VERSION + " · " + APP_DATE;
 
-// Restore from session
+// Restore API key from storage (session first, then local for persistence)
 try {
-  const k = sessionStorage.getItem("ms_gemini_key");
-  if (k) document.getElementById("apiKeyInput").value = k;
+  const k = sessionStorage.getItem("ms_gemini_key") || localStorage.getItem("ms_gemini_key");
+  if (k) {
+    document.getElementById("apiKeyInput").value = k;
+    // Keep in sync
+    sessionStorage.setItem("ms_gemini_key", k);
+  }
 } catch(_){}
 try {
   const t = sessionStorage.getItem("ms_doc_text");
@@ -712,14 +736,6 @@ document.getElementById("customNote").addEventListener("input", e => state.custo
 const hashToggle = document.getElementById("hashToggle");
 hashToggle.addEventListener("click", () => { state.hashtags = !state.hashtags; hashToggle.classList.toggle("on", state.hashtags); });
 
-// ─── API Key toggle ──────────────────────────────────────
-function toggleKey() {
-  const inp = document.getElementById("apiKeyInput");
-  const btn = document.getElementById("keyToggle");
-  if (inp.type === "password") { inp.type = "text"; btn.textContent = "🙈"; }
-  else { inp.type = "password"; btn.textContent = "👁"; }
-}
-
 // ─── Generate ─────────────────────────────────────────────
 document.getElementById("genBtn").addEventListener("click", generate);
 
@@ -760,8 +776,8 @@ function lockDocState() {
 async function generate() {
   const btn = document.getElementById("genBtn");
   btn.disabled = true; btn.textContent = "⏳ Genererar...";
-  // Persist key in sessionStorage for convenience
-  try { const k = document.getElementById("apiKeyInput").value.trim(); if(k) sessionStorage.setItem("ms_gemini_key", k); } catch(_){}
+  // Persist key
+  try { const k = document.getElementById("apiKeyInput").value.trim(); if(k) { sessionStorage.setItem("ms_gemini_key", k); localStorage.setItem("ms_gemini_key", k); } } catch(_){}
   document.getElementById("errorBox").style.display = "none";
   document.getElementById("postsWrap").innerHTML = "";
   document.getElementById("outputHead").style.display = "none";
