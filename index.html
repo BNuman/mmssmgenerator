@@ -432,7 +432,7 @@ header{background:var(--navy);padding:0 20px;height:58px;display:flex;align-item
 <script>
 
 // ── Constants ──────────────────────────────────────────────
-const APP_VERSION = "4.0.0";
+const APP_VERSION = "4.3.0";
 const APP_DATE    = "2026-06-07";
 
 const BRAND_BIBLE = `MEDMÄNNISKA SVERIGE - FULL AI BRAND BIBLE | VERSION 1.0 | 2026-06-07
@@ -576,27 +576,26 @@ async function runGenerator() {
   const systemP = `Du är kommunikationsansvarig för Medmänniska Sverige.\n\nBRAND BIBLE:\n${shared.docText}\n\nSkriv alltid på svenska. Tala varmt och mänskligt.`;
   const EMOJI_MAP={none:"Inga emojis.",low:"Max 1-2 emojis.",medium:"3-5 emojis.",high:"6 eller fler emojis."};
   const emojiInstr=EMOJI_MAP[genState.emojiLevel]||EMOJI_MAP.medium;
-  const userP = `Skapa inlägg för Medmänniska Sverige.
-Tema: ${THEME_MAP[genState.theme]}
-Målgrupp: ${aud}
-Plattformar: ${plats}
-Ton: ${tone}
-Emojis: ${emojiInstr}
-${hash}
-${custom ? 'Inkludera naturligt: "' + custom + '"' : ""}
-
-Generera ETT inlägg per plattform. Svara ENBART med JSON:
-{"posts":[{"platform":"instagram","text":"...","hashtags":"#tag1 #tag2"},{"platform":"facebook","text":"...","hashtags":"#tag1 #tag2"}]}`;
+  const customLine = custom ? ("Inkludera: " + custom) : "";
+  const userP = "Skapa inlagg for Medmanniska Sverige. Tema: " + THEME_MAP[genState.theme] + ". Ton: " + tone + ". Emojis: " + emojiInstr + ". " + (hash==="Inkludera 5–7 hashtags." ? "Med hashtags." : "Utan hashtags.") + " " + customLine + " Generera ETT kort inlagg (max 400 tecken) per plattform. Svara ENBART med JSON utan forklaringar: {\"posts\":[{\"platform\":\"instagram\",\"text\":\"...\",\"hashtags\":\"#tag1 #tag2\"},{\"platform\":\"facebook\",\"text\":\"...\",\"hashtags\":\"#tag1 #tag2\"}]}";
 
   try {
     const raw = await callGemini(systemP, userP, []);
-    const clean = raw.replace(/\`\`\`json\s*/gi,"").replace(/\`\`\`\s*/g,"").trim();
+    const clean = raw.replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim();
     let parsed;
     try { parsed = JSON.parse(clean); }
     catch(_) {
-      const s = clean.indexOf("{"), e = clean.lastIndexOf("}");
-      parsed = JSON.parse(clean.slice(s, e+1));
+      const s = clean.indexOf("{");
+      const e = clean.lastIndexOf("}");
+      if(s===-1||e===-1) throw new Error("Tomt svar från AI. Försök igen.");
+      let candidate = clean.slice(s, e+1);
+      // Fix truncated strings
+      const opens = (candidate.match(/{/g)||[]).length - (candidate.match(/}/g)||[]).length;
+      for(let i=0;i<opens;i++) candidate += "}";
+      try { parsed = JSON.parse(candidate); }
+      catch(_) { throw new Error("Ofullständigt svar. Försök igen."); }
     }
+    if(!parsed||!parsed.posts) throw new Error("Oväntat format. Försök igen.");
     renderGenPosts(parsed.posts);
   } catch(e) {
     showGenErr("⚠️ " + e.message);
@@ -873,23 +872,27 @@ function showNewChatBtn(show) {
 function buildWelcomeHTML() {
   var w = document.createElement("div");
   w.className = "welcome"; w.id = "agentWelcome";
-  w.innerHTML = "<div class=\"welcome-icon\">\u2764\uFE0F</div>"
-    + "<h2>Hej! Jag \u00e4r er Social Media Agent</h2>"
-    + "<p>Jag kan skapa inl\u00e4gg, svara p\u00e5 kommentarer, skriva om texter och planera ert inneh\u00e5ll \u2014 alltid baserat p\u00e5 Medm\u00e4nniska Sveriges v\u00e4rderingar.</p>"
-    + "<div class=\"welcome-chips\"></div>";
-  var chips = w.querySelector(".welcome-chips");
-  [
-    ["new_post", "\u270D\uFE0F Skapa ett inl\u00e4gg"],
-    ["reply_comment", "\uD83D\uDCAC Svara p\u00e5 kommentar"],
-    ["rewrite", "\u270F\uFE0F Skriv om ett inl\u00e4gg"],
-    ["content_plan", "\uD83D\uDCC5 Inneh\u00e5llsplan"]
-  ].forEach(function(item) {
+  var icon = document.createElement("div");
+  icon.className = "welcome-icon"; icon.textContent = "❤️";
+  var h2 = document.createElement("h2");
+  h2.textContent = "Hej! Jag är er Social Media Agent";
+  var p = document.createElement("p");
+  p.textContent = "Jag kan skapa inlägg, svara på kommentarer, skriva om texter och planera ert innehåll.";
+  var cw = document.createElement("div");
+  cw.className = "welcome-chips";
+  var wdata = [
+    {mode:"new_post",      text:"✍️ Skapa ett inlägg"},
+    {mode:"reply_comment", text:"💬 Svara på kommentar"},
+    {mode:"rewrite",       text:"✏️ Skriv om ett inlägg"},
+    {mode:"content_plan",  text:"📅 Innehållsplan"}
+  ];
+  wdata.forEach(function(item){
     var btn = document.createElement("button");
-    btn.className = "wchip";
-    btn.textContent = item[1];
-    btn.addEventListener("click", function() { agentQuick(item[0]); });
-    chips.appendChild(btn);
+    btn.className = "wchip"; btn.textContent = item.text;
+    btn.addEventListener("click", function(){ agentQuick(item.mode); });
+    cw.appendChild(btn);
   });
+  w.appendChild(icon); w.appendChild(h2); w.appendChild(p); w.appendChild(cw);
   return w;
 }
 
@@ -1044,8 +1047,8 @@ async function selfReview(posts){
     var raw=await callGemini(
       'Du ar kvalitetsgranskare for Medmanniska Sverige. Svara ENBART med JSON: {"type":"text","message":"..."}',
       "Granska dessa inlagg mot Brand Bible. Ar tonen ratt? Stammer vardena?\n\n"+txt,[]);
-    var clean=raw.replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim();
-    var parsed;try{parsed=JSON.parse(clean);}catch(_){parsed={message:clean};}
+    var cleanR=raw.replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim();
+    var parsed;try{parsed=JSON.parse(cleanR);}catch(_){var si=cleanR.indexOf("{"),ei=cleanR.lastIndexOf("}");if(si!==-1&&ei!==-1){try{parsed=JSON.parse(cleanR.slice(si,ei+1));}catch(_){parsed={message:cleanR};}}else{parsed={message:cleanR};}}
     var msg=(parsed.message||"").trim();
     if(!msg)return;
     var d=document.createElement("div");d.className="msg agent";
@@ -1195,17 +1198,17 @@ function escAttr(s){return String(s||"").replace(/"/g,"&quot;");}
 (function(){
   var chips = document.getElementById("welcomeChips");
   if(!chips) return;
-  var items = [
-    ["new_post", "\u270d\ufe0f Skapa ett inl\u00e4gg"],
-    ["reply_comment", "\U0001f4ac Svara p\u00e5 kommentar"],
-    ["rewrite", "\u270f\ufe0f Skriv om ett inl\u00e4gg"],
-    ["content_plan", "\U0001f4c5 Inneh\u00e5llsplan"]
+  var data = [
+    {mode:"new_post",      text:"✍️ Skapa ett inlägg"},
+    {mode:"reply_comment", text:"💬 Svara på kommentar"},
+    {mode:"rewrite",       text:"✏️ Skriv om ett inlägg"},
+    {mode:"content_plan",  text:"📅 Innehållsplan"}
   ];
-  items.forEach(function(item){
+  data.forEach(function(item){
     var btn = document.createElement("button");
     btn.className = "wchip";
-    btn.textContent = item[1];
-    btn.addEventListener("click", function(){ agentQuick(item[0]); });
+    btn.textContent = item.text;
+    btn.addEventListener("click", function(){ agentQuick(item.mode); });
     chips.appendChild(btn);
   });
 })();
