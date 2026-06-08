@@ -3,985 +3,643 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Medmänniska Sverige – Inläggsgenerator</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<title>Medmänniska Sverige – Social Media Suite</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --red:#D42B2B;--red-pale:#fdf0f0;
-  --navy:#2E3F5C;--navy-light:#4a5f80;--coral:#E07060;
-  --white:#fff;--off:#fafaf8;--grey:#f0eeeb;
-  --text:#1a1a1a;--muted:#7a7a7a;
+  --red:#D42B2B;--red-dark:#a81f1f;--red-pale:#fdf3f3;
+  --navy:#1E2D45;--navy-mid:#2E3F5C;--navy-light:#4a6080;
+  --coral:#E07060;--sand:#f7f4ef;--white:#fff;
+  --grey:#ece8e1;--text:#18181b;--muted:#6b7280;
+  --shadow:0 4px 24px rgba(0,0,0,.08);
+  --shadow-deep:0 12px 48px rgba(0,0,0,.14);
 }
-body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);min-height:100vh}
+html,body{height:100%}
+body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);display:flex;flex-direction:column;overflow:hidden}
 
-header{background:var(--white);border-bottom:1px solid #ece9e4;padding:14px 24px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.05)}
-.logo-box{width:50px;height:50px;background:var(--red-pale);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-header h1{font-family:'Playfair Display',serif;font-size:18px;color:var(--navy);line-height:1.1}
-header h1 span{display:block;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--coral);text-transform:uppercase;margin-top:2px}
+/* ── HEADER ── */
+header{background:var(--navy);padding:0 20px;height:58px;display:flex;align-items:center;gap:12px;flex-shrink:0;z-index:10}
+.logo-box{width:36px;height:36px;background:rgba(255,255,255,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.header-text h1{font-family:'Fraunces',serif;font-size:15px;color:#fff;line-height:1.1;font-weight:600}
+.header-text span{font-size:10px;font-weight:500;letter-spacing:.1em;color:rgba(255,255,255,.4);text-transform:uppercase}
 
-.wrap{max-width:680px;margin:0 auto;padding:28px 16px 60px}
+/* MODE SWITCHER */
+.mode-switch{margin-left:auto;display:flex;align-items:center;background:rgba(255,255,255,.08);border-radius:10px;padding:3px;gap:2px}
+.mode-btn{padding:6px 14px;border-radius:8px;border:none;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;color:rgba(255,255,255,.5);background:transparent}
+.mode-btn.active{background:var(--red);color:#fff}
+.mode-btn:not(.active):hover{color:#fff;background:rgba(255,255,255,.1)}
 
-.section-label{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;margin-top:24px}
+.header-actions{display:flex;gap:8px;margin-left:12px}
+.hdr-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.5);border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap}
+.hdr-btn:hover{background:rgba(255,255,255,.15);color:rgba(255,255,255,.85)}
+.version-tag{font-size:10px;color:rgba(255,255,255,.25);margin-left:4px}
 
-/* VALUES STRIP */
-.values-strip{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px;background:var(--red-pale);border-radius:12px;border-left:3px solid var(--red)}
-.values-strip span{font-size:11px;color:var(--red);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+/* ── PANELS ── */
+.panel{display:none;flex:1;overflow:hidden}
+.panel.active{display:flex;flex-direction:column}
+
+/* ════════════════════════════════════════
+   GENERATOR PANEL
+════════════════════════════════════════ */
+.gen-layout{display:grid;grid-template-columns:340px 1fr;flex:1;overflow:hidden;height:100%}
+.gen-sidebar{background:var(--white);border-right:1px solid var(--grey);padding:24px 20px;overflow-y:auto}
+.gen-output{padding:28px 24px;overflow-y:auto;background:var(--sand)}
+
+.sec-label{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;margin-top:22px}
+.sec-label:first-child{margin-top:0}
+
+.values-strip{display:flex;flex-wrap:wrap;gap:5px;padding:10px 14px;background:var(--red-pale);border-radius:10px;border-left:3px solid var(--red);margin-bottom:4px}
+.values-strip span{font-size:10px;color:var(--red);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
 .values-strip .dot{color:#ddd}
 
-/* DOCUMENT UPLOAD */
-.doc-zone{border:2px dashed #ddd;border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--white);position:relative}
-.doc-zone:hover,.doc-zone.drag{border-color:var(--red);background:var(--red-pale)}
-.doc-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.doc-icon{font-size:28px;margin-bottom:8px}
-.doc-title{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px}
-.doc-sub{font-size:12px;color:var(--muted)}
+.doc-status-bar{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--sand);border-radius:10px;border:1px solid var(--grey)}
+.doc-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0}
+.doc-info .doc-name{font-size:12px;font-weight:600;color:var(--navy-mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+.doc-info .doc-meta{font-size:10px;color:var(--muted);margin-top:1px}
 
-.doc-loaded{border:2px solid #4CAF50;background:#f1f8f1;border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px}
-.doc-loaded-icon{font-size:24px;flex-shrink:0}
-.doc-loaded-info{flex:1;min-width:0}
-.doc-loaded-name{font-size:13px;font-weight:600;color:#2E7D32;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.doc-loaded-meta{font-size:11px;color:var(--muted);margin-top:2px}
-.doc-remove{background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);padding:4px;border-radius:6px;transition:all .2s;flex-shrink:0}
-.doc-remove:hover{color:#c62828;background:#fce4ec}
-.doc-admin-btn{background:none;border:none;font-size:16px;cursor:pointer;color:var(--muted);padding:4px;border-radius:6px;transition:all .2s;flex-shrink:0;opacity:0.4}
-.doc-admin-btn:hover{opacity:1;background:var(--grey)}
-
-.doc-processing{border:2px solid #ddd;background:var(--white);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:12px}
-.spinner{width:20px;height:20px;border:2px solid #ddd;border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
-@keyframes spin{to{transform:rotate(360deg)}}
-.doc-processing span{font-size:13px;color:var(--muted)}
-
-.doc-warning{margin-top:8px;font-size:11px;color:#E07060;padding:8px 12px;background:#fff8f5;border-radius:8px;border-left:2px solid #E07060}
-
-/* PILLS */
-.pills{display:flex;gap:8px;flex-wrap:wrap}
-.pill{padding:8px 14px;border-radius:50px;border:1.5px solid #ddd;font-size:13px;font-weight:500;cursor:pointer;background:transparent;color:var(--muted);transition:all .2s;font-family:inherit}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{padding:7px 13px;border-radius:50px;border:1.5px solid var(--grey);font-size:12px;font-weight:500;cursor:pointer;background:transparent;color:var(--muted);transition:all .2s;font-family:inherit}
 .pill:hover{border-color:var(--red);color:var(--red)}
 .pill.on{background:var(--red);border-color:var(--red);color:#fff}
 
-.platforms{display:flex;gap:10px}
-.plat{flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid #ddd;font-size:13px;font-weight:500;cursor:pointer;background:transparent;color:var(--muted);transition:all .2s;font-family:inherit;text-align:center}
-.plat.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.plat-row{display:flex;gap:8px}
+.plat-btn{flex:1;padding:9px 10px;border-radius:9px;border:1.5px solid var(--grey);font-size:12px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);transition:all .2s;font-family:inherit;text-align:center}
+.plat-btn.on{background:var(--navy-mid);border-color:var(--navy-mid);color:#fff}
 
-select,textarea{width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid #ddd;font-size:14px;font-family:inherit;color:var(--text);background:var(--white);transition:border-color .2s}
-select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a7a7a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
-select:focus,textarea:focus{outline:none;border-color:var(--red)}
-textarea{resize:vertical;min-height:80px}
+select,textarea,input[type=text],input[type=password]{font-family:inherit}
+.gen-select{width:100%;padding:9px 13px;border-radius:9px;border:1.5px solid var(--grey);font-size:13px;color:var(--text);background:var(--white);cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a7a7a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.gen-select:focus{outline:none;border-color:var(--red)}
+.gen-textarea{width:100%;padding:10px 13px;border-radius:9px;border:1.5px solid var(--grey);font-size:13px;color:var(--text);resize:vertical;min-height:72px;outline:none;transition:border-color .2s;background:var(--white)}
+.gen-textarea:focus{border-color:var(--red)}
 
 .toggle-row{display:flex;align-items:center;justify-content:space-between}
-.toggle{width:44px;height:24px;background:#ddd;border-radius:50px;position:relative;cursor:pointer;transition:background .25s;border:none;flex-shrink:0}
-.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform .25s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.toggle{width:42px;height:23px;background:#ddd;border-radius:50px;position:relative;cursor:pointer;transition:background .25s;border:none;flex-shrink:0}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:17px;height:17px;background:#fff;border-radius:50%;transition:transform .25s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
 .toggle.on{background:var(--red)}
-.toggle.on::after{transform:translateX(20px)}
+.toggle.on::after{transform:translateX(19px)}
 
-.gen-btn{width:100%;padding:15px;background:var(--red);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;margin-top:24px;transition:all .2s;letter-spacing:.02em}
-.gen-btn:hover:not(:disabled){background:#b82020;transform:translateY(-1px);box-shadow:0 6px 20px rgba(212,43,43,.3)}
-.gen-btn:disabled{background:#ccc;cursor:not-allowed}
+.gen-btn{width:100%;padding:13px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;margin-top:20px;transition:all .2s}
+.gen-btn:hover:not(:disabled){background:var(--red-dark);transform:translateY(-1px);box-shadow:0 6px 20px rgba(212,43,43,.3)}
+.gen-btn:disabled{background:#ccc;cursor:not-allowed;transform:none;box-shadow:none}
 
-/* OUTPUT */
-.empty{text-align:center;padding:48px 0;opacity:.4}
-.empty-icon{font-size:48px;margin-bottom:12px}
-.posts{display:flex;flex-direction:column;gap:16px;margin-top:28px}
-.card{background:var(--white);border-radius:18px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.07);animation:up .4s ease both}
-@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.card:nth-child(2){animation-delay:.08s}.card:nth-child(3){animation-delay:.16s}
-.card-head{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0eeeb}
-.card-meta{display:flex;align-items:center;gap:10px}
-.avatar{width:34px;height:34px;border-radius:50%;background:var(--red-pale);display:flex;align-items:center;justify-content:center;font-size:15px}
-.org{font-weight:600;font-size:13px;color:var(--navy)}
-.badge{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:50px}
+/* Output */
+.output-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.output-title{font-family:'Fraunces',serif;font-size:22px;color:var(--navy)}
+.count-badge{font-size:12px;color:var(--muted);background:var(--grey);padding:4px 12px;border-radius:50px}
+.posts-list{display:flex;flex-direction:column;gap:14px}
+.post-card{background:var(--white);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);animation:up .35s ease both}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.post-card:nth-child(2){animation-delay:.07s}
+.card-head{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0eeeb}
+.card-meta{display:flex;align-items:center;gap:9px}
+.card-avatar{width:32px;height:32px;border-radius:50%;background:var(--red-pale);display:flex;align-items:center;justify-content:center;font-size:14px}
+.card-org{font-weight:600;font-size:12px;color:var(--navy-mid)}
+.plat-badge{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:50px}
 .badge-ig{background:#fce4ec;color:#c62828}
 .badge-fb{background:#e8eaf6;color:#283593}
 .num-badge{font-size:11px;color:var(--muted);background:var(--grey);padding:3px 10px;border-radius:50px}
-.card-body{padding:18px 18px 12px}
-.post-text{font-size:14px;line-height:1.8;color:var(--text);white-space:pre-wrap;word-break:break-word}
-.post-tags{margin-top:10px;font-size:13px;color:var(--navy-light);line-height:1.8}
-.bar-wrap{height:3px;background:#f0eeeb;margin:0 18px}
+.card-body{padding:16px 16px 10px}
+.card-text{font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap;word-break:break-word}
+.card-tags{margin-top:8px;font-size:12px;color:var(--navy-light);line-height:1.8}
+.doc-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#16a34a;background:#f0fdf4;border:1px solid #bbf7d0;padding:2px 8px;border-radius:50px;margin-top:6px}
+.bar-wrap{height:3px;background:#f0eeeb;margin:0 16px}
 .bar-fill{height:100%;border-radius:2px}
-.card-foot{padding:12px 18px;display:flex;align-items:center;justify-content:space-between}
-.chars{font-size:12px;color:var(--muted)}
-.copy-btn{padding:7px 16px;background:transparent;border:1.5px solid var(--navy);border-radius:8px;font-size:12px;font-weight:600;font-family:inherit;color:var(--navy);cursor:pointer;transition:all .2s}
-.copy-btn:hover{background:var(--navy);color:#fff}
-.copy-btn.done{background:#2E7D32;border-color:#2E7D32;color:#fff}
-.fallback-area{padding:0 18px 16px}
-.fallback-label{font-size:11px;color:var(--muted);margin-bottom:6px}
-.fallback-ta{width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid var(--red);font-size:13px;font-family:inherit;color:var(--text);background:var(--red-pale);resize:vertical;min-height:100px;outline:none}
+.card-foot{padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
+.chars{font-size:11px;color:var(--muted)}
+.copy-btn{padding:6px 14px;background:transparent;border:1.5px solid var(--navy-mid);border-radius:7px;font-size:11px;font-weight:600;font-family:inherit;color:var(--navy-mid);cursor:pointer;transition:all .2s}
+.copy-btn:hover{background:var(--navy-mid);color:#fff}
+.copy-btn.done{background:#16a34a;border-color:#16a34a;color:#fff}
+.fallback-area{padding:0 16px 14px}
+.fallback-label{font-size:11px;color:var(--muted);margin-bottom:5px}
+.fallback-ta{width:100%;padding:9px 11px;border-radius:8px;border:1.5px solid var(--red);font-size:12px;font-family:inherit;color:var(--text);background:var(--red-pale);resize:vertical;min-height:90px;outline:none}
+.gen-empty{text-align:center;padding:48px 0;opacity:.4}
+.gen-err{background:#fff5f5;border:1px solid #ffcdd2;border-radius:10px;padding:12px 16px;color:#c62828;font-size:13px;margin-top:12px}
 
-.doc-source-tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#2E7D32;background:#f1f8f1;border:1px solid #c8e6c9;padding:3px 10px;border-radius:50px;margin-top:8px}
+/* ════════════════════════════════════════
+   AGENT PANEL
+════════════════════════════════════════ */
+.agent-layout{display:flex;flex:1;overflow:hidden}
+.agent-sidebar{width:260px;background:var(--white);border-right:1px solid var(--grey);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.agent-sidebar-top{padding:16px 16px 12px;border-bottom:1px solid var(--grey)}
+.qa-list{display:flex;flex-direction:column;gap:5px}
+.qa-btn{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;border:1.5px solid var(--grey);background:transparent;cursor:pointer;text-align:left;font-family:inherit;transition:all .2s;color:var(--text)}
+.qa-btn:hover,.qa-btn.active{border-color:var(--red);background:var(--red-pale)}
+.qa-icon{font-size:16px;flex-shrink:0;width:24px;text-align:center}
+.qa-label{font-size:12px;font-weight:600;line-height:1.2}
+.qa-sub{font-size:10px;color:var(--muted);margin-top:1px}
+.agent-sidebar-mid{padding:14px 16px;border-bottom:1px solid var(--grey)}
+.agent-sidebar-bot{padding:14px 16px;flex:1;overflow-y:auto}
+.hist-item{padding:7px 8px;border-radius:7px;cursor:pointer;transition:background .15s;margin-bottom:2px}
+.hist-item:hover{background:var(--sand)}
+.hist-title{font-size:11px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-meta{font-size:10px;color:var(--muted);margin-top:1px}
+.no-hist{font-size:11px;color:var(--muted);font-style:italic;padding:2px}
+.agent-plat-row{display:flex;gap:5px;margin-top:10px}
+.a-plat{flex:1;padding:6px 7px;border-radius:7px;border:1.5px solid var(--grey);font-size:11px;font-weight:600;cursor:pointer;text-align:center;font-family:inherit;transition:all .2s;color:var(--muted)}
+.a-plat.on{border-color:var(--navy-mid);background:var(--navy-mid);color:#fff}
 
-.output-head{display:flex;align-items:center;justify-content:space-between;margin-top:32px;margin-bottom:4px}
-.output-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--navy)}
-.count-badge{font-size:12px;color:var(--muted);background:var(--grey);padding:4px 12px;border-radius:50px}
-.err{background:#fff5f5;border:1px solid #ffcdd2;border-radius:12px;padding:14px 18px;color:#c62828;font-size:14px;margin-top:16px}
+.chat-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.messages{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
+.welcome{text-align:center;padding:28px 20px;max-width:460px;margin:auto}
+.welcome-icon{font-size:44px;margin-bottom:14px}
+.welcome h2{font-family:'Fraunces',serif;font-size:22px;color:var(--navy);margin-bottom:7px}
+.welcome p{font-size:13px;color:var(--muted);line-height:1.7}
+.welcome-chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:16px}
+.wchip{padding:7px 13px;border-radius:50px;border:1.5px solid var(--grey);background:var(--white);font-size:12px;font-weight:500;cursor:pointer;color:var(--navy-mid);transition:all .2s;font-family:inherit}
+.wchip:hover{border-color:var(--red);background:var(--red-pale);color:var(--red)}
+
+.msg{display:flex;gap:9px;max-width:100%;animation:msgIn .3s ease both}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{flex-direction:row-reverse}
+.msg-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:2px}
+.msg.agent .msg-av{background:var(--red-pale);color:var(--red)}
+.msg.user .msg-av{background:var(--navy);color:#fff;font-size:11px;font-weight:700}
+.msg-content{max-width:78%}
+.msg.user .msg-content{align-items:flex-end;display:flex;flex-direction:column}
+.bubble{padding:11px 15px;border-radius:15px;font-size:13px;line-height:1.75;word-break:break-word}
+.msg.agent .bubble{background:var(--white);color:var(--text);border-bottom-left-radius:4px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.msg.user .bubble{background:var(--navy);color:#fff;border-bottom-right-radius:4px}
+.msg-time{font-size:10px;color:var(--muted);margin-top:3px;padding:0 3px}
+
+/* Agent post card */
+.a-post-card{background:var(--white);border-radius:12px;border:1.5px solid var(--grey);overflow:hidden;margin-top:5px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.a-post-head{padding:9px 13px;border-bottom:1px solid var(--grey);display:flex;align-items:center;justify-content:space-between}
+.a-post-body{padding:13px;font-size:13px;line-height:1.75;color:var(--text);white-space:pre-wrap}
+.a-post-tags{color:var(--navy-light);margin-top:7px;font-size:12px}
+.a-post-foot{padding:9px 13px;border-top:1px solid var(--grey);display:flex;align-items:center;justify-content:space-between}
+.a-copy-btn{padding:5px 11px;border:1.5px solid var(--navy-mid);border-radius:6px;font-size:11px;font-weight:600;font-family:inherit;color:var(--navy-mid);background:transparent;cursor:pointer;transition:all .2s}
+.a-copy-btn:hover{background:var(--navy-mid);color:#fff}
+.a-copy-btn.done{background:#16a34a;border-color:#16a34a;color:#fff}
+
+/* Plan card */
+.plan-card{background:var(--white);border-radius:12px;border:1.5px solid var(--grey);overflow:hidden;margin-top:5px}
+.plan-head{padding:9px 13px;border-bottom:1px solid var(--grey);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--navy-mid);background:var(--sand)}
+.plan-item{padding:9px 13px;border-bottom:1px solid #f5f3ef;display:flex;gap:9px;align-items:flex-start}
+.plan-item:last-child{border-bottom:none}
+.plan-day{font-size:11px;font-weight:700;color:var(--red);width:26px;flex-shrink:0;margin-top:1px}
+.plan-text{font-size:12px;color:var(--text);line-height:1.5}
+.plan-tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:50px;background:var(--red-pale);color:var(--red);margin-top:3px}
+
+.thinking-dots{display:flex;gap:4px;padding:11px 15px;background:var(--white);border-radius:15px;border-bottom-left-radius:4px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.thinking-dots span{width:6px;height:6px;border-radius:50%;background:#ccc;animation:dot .9s infinite}
+.thinking-dots span:nth-child(2){animation-delay:.15s}
+.thinking-dots span:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,80%,100%{transform:scale(.8);background:#ddd}40%{transform:scale(1.1);background:var(--red)}}
+
+.input-bar{border-top:1px solid var(--grey);background:var(--white);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.quick-chips{display:flex;gap:5px;overflow-x:auto;padding-bottom:2px}
+.quick-chips::-webkit-scrollbar{display:none}
+.qchip{white-space:nowrap;padding:5px 11px;border-radius:50px;border:1.5px solid var(--grey);background:var(--white);font-size:11px;font-weight:500;cursor:pointer;color:var(--navy-mid);transition:all .2s;font-family:inherit;flex-shrink:0}
+.qchip:hover{border-color:var(--red);color:var(--red);background:var(--red-pale)}
+.input-row{display:flex;gap:9px;align-items:flex-end}
+.chat-input{width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid var(--grey);font-size:13px;font-family:inherit;color:var(--text);background:var(--sand);resize:none;line-height:1.5;max-height:110px;overflow-y:auto;outline:none;transition:border-color .2s}
+.chat-input:focus{border-color:var(--red);background:var(--white)}
+.send-btn{width:42px;height:42px;border-radius:11px;background:var(--red);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.send-btn:hover{background:var(--red-dark)}
+.send-btn:disabled{background:#ccc;cursor:not-allowed}
+.send-btn svg{width:17px;height:17px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── ADMIN MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.modal{background:var(--white);border-radius:18px;padding:26px;width:100%;max-width:380px;box-shadow:var(--shadow-deep)}
+.modal h3{font-family:'Fraunces',serif;font-size:19px;color:var(--navy);margin-bottom:5px}
+.modal p{font-size:13px;color:var(--muted);margin-bottom:18px}
+.modal-field{margin-bottom:12px}
+.mlabel{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.minput{width:100%;padding:9px 13px;border-radius:9px;border:1.5px solid var(--grey);font-size:13px;font-family:inherit;color:var(--text);outline:none;background:var(--sand)}
+.minput:focus{border-color:var(--red);background:var(--white)}
+.modal-row{display:flex;gap:8px;margin-top:4px}
+.mbtn{flex:1;padding:10px;border-radius:9px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:all .2s}
+.mbtn.primary{background:var(--red);color:#fff}
+.mbtn.primary:hover{background:var(--red-dark)}
+.mbtn.secondary{background:var(--grey);color:var(--text)}
+.mbtn.secondary:hover{background:#ddd}
+.msg-ok{font-size:12px;color:#16a34a;margin-top:6px;display:none}
+.msg-err{font-size:12px;color:#c62828;margin-top:6px;display:none}
+.upload-zone{border:2px dashed #ddd;border-radius:9px;padding:13px;text-align:center;cursor:pointer;position:relative;background:var(--sand)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:#ddd;border-radius:3px}
+@media(max-width:680px){
+  .gen-layout{grid-template-columns:1fr!important;grid-template-rows:auto 1fr;overflow-y:auto}
+  .gen-sidebar{display:block;border-right:none;border-bottom:1px solid var(--grey);padding:16px;overflow:visible}
+  .gen-output{padding:16px;overflow:visible}
+  .agent-sidebar{display:none}
+  .gen-layout,.agent-layout{height:auto}
+  header{height:auto;padding:10px 14px;flex-wrap:wrap;gap:8px}
+  .mode-switch{order:3;width:100%;justify-content:center}
+  .header-actions{margin-left:auto}
+  .header-text h1{font-size:13px}
+  .panel.active{flex-direction:column;overflow-y:auto}
+  .agent-layout{height:100%}
+  .chat-wrap{min-height:0;flex:1}
+}
 </style>
 </head>
 <body>
 
 <header>
   <div class="logo-box">
-    <svg viewBox="0 0 100 100" width="38" height="38" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="35" cy="18" r="12" fill="#D42B2B"/>
-      <circle cx="65" cy="18" r="12" fill="#D42B2B"/>
-      <path d="M50 90 C20 70 10 50 30 35 C40 28 50 40 50 40 C50 40 60 28 70 35 C90 50 80 70 50 90Z" fill="#D42B2B"/>
-      <path d="M50 55 C44 49 38 44 38 38 C38 33 44 30 50 36 C56 30 62 33 62 38 C62 44 56 49 50 55Z" fill="white"/>
+    <svg viewBox="0 0 100 100" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="35" cy="18" r="12" fill="#fff" opacity=".9"/>
+      <circle cx="65" cy="18" r="12" fill="#fff" opacity=".9"/>
+      <path d="M50 90 C20 70 10 50 30 35 C40 28 50 40 50 40 C50 40 60 28 70 35 C90 50 80 70 50 90Z" fill="#fff" opacity=".9"/>
+      <path d="M50 55 C44 49 38 44 38 38 C38 33 44 30 50 36 C56 30 62 33 62 38 C62 44 56 49 50 55Z" fill="#D42B2B"/>
     </svg>
   </div>
-  <h1>Medmänniska Sverige<span>Inläggsgenerator</span></h1>
-  <div id="versionBadge" style="margin-left:auto;font-size:10px;color:var(--muted);background:var(--grey);padding:4px 10px;border-radius:50px;white-space:nowrap;flex-shrink:0"></div>
+  <div class="header-text">
+    <h1>Medmänniska Sverige</h1>
+    <span>Social Media Suite</span>
+  </div>
+  <div class="mode-switch">
+    <button class="mode-btn active" id="btnGenerator" onclick="switchMode('generator')">⚡ Generator</button>
+    <button class="mode-btn" id="btnAgent" onclick="switchMode('agent')">🤖 Agent</button>
+  </div>
+  <div class="header-actions">
+    <button class="hdr-btn" onclick="openAdmin()">🔒 Admin</button>
+    <span class="version-tag" id="versionTag"></span>
+  </div>
 </header>
 
-<div class="wrap">
+<!-- ══════════ GENERATOR PANEL ══════════ -->
+<div class="panel active" id="panelGenerator">
+  <div class="gen-layout" style="flex:1">
+    <aside class="gen-sidebar">
+      <div class="values-strip">
+        <span>Värme</span><span class="dot">·</span><span>Värdighet</span><span class="dot">·</span>
+        <span>Gemenskap</span><span class="dot">·</span><span>Medmänsklighet</span><span class="dot">·</span><span>Kärlek</span>
+      </div>
 
-  <div class="values-strip">
-    <span>Värme & gemenskap</span><span class="dot">·</span>
-    <span>Värdighet & respekt</span><span class="dot">·</span>
-    <span>Hopp & förändring</span><span class="dot">·</span>
-    <span>Medmänsklighet</span><span class="dot">·</span>
-    <span>Kärlek</span>
+      <div class="sec-label">Dokument</div>
+      <div class="doc-status-bar">
+        <div class="doc-dot"></div>
+        <div class="doc-info">
+          <div class="doc-name" id="genDocName">Brand Bible v1.0</div>
+          <div class="doc-meta" id="genDocMeta">Inbyggt · 2026-06-07</div>
+        </div>
+      </div>
+
+      <div class="sec-label">Tema</div>
+      <div class="pills" id="genTheme">
+        <button class="pill on" data-v="food">🍲 Matutdelning</button>
+        <button class="pill" data-v="volunteer">🙋 Volontärer</button>
+        <button class="pill" data-v="general">❤️ Om oss</button>
+      </div>
+
+      <div class="sec-label">Målgrupp</div>
+      <div class="pills" id="genAudience">
+        <button class="pill on" data-v="volunteers">Volontärer</button>
+        <button class="pill on" data-v="help">Behövande</button>
+        <button class="pill on" data-v="donors">Donationer</button>
+        <button class="pill on" data-v="public">Allmänheten</button>
+      </div>
+
+      <div class="sec-label">Plattform</div>
+      <div class="plat-row">
+        <button class="plat-btn on" data-gp="instagram" onclick="toggleGenPlat(this)">📸 Instagram</button>
+        <button class="plat-btn on" data-gp="facebook" onclick="toggleGenPlat(this)">👥 Facebook</button>
+      </div>
+
+      <div class="sec-label">Ton</div>
+      <select class="gen-select" id="genTone">
+        <option value="warm">Varm & hjärtlig</option>
+        <option value="urgent">Angelägen & engagerande</option>
+        <option value="grateful">Tacksam & inspirerande</option>
+        <option value="informative">Informativ & tydlig</option>
+      </select>
+
+      <div class="sec-label">Eget tillägg (valfritt)</div>
+      <textarea class="gen-textarea" id="genCustom" placeholder="T.ex. nästa utdelning söndag 15 juni kl 18:00 vid Carl Johans kyrka…"></textarea>
+
+      <div class="sec-label">Hashtags</div>
+      <div class="toggle-row">
+        <span style="font-size:13px">Inkludera hashtags</span>
+        <button class="toggle on" id="genHashToggle" onclick="genState.hashtags=!genState.hashtags;this.classList.toggle('on',genState.hashtags)"></button>
+      </div>
+
+      <input type="hidden" id="genApiKey">
+      <button class="gen-btn" id="genRunBtn" onclick="runGenerator()">✨ Generera inlägg</button>
+    </aside>
+
+    <main class="gen-output">
+      <div id="genOutputHead" class="output-head" style="display:none">
+        <div class="output-title">Dina inlägg</div>
+        <span class="count-badge" id="genCount"></span>
+      </div>
+      <div class="posts-list" id="genPosts"></div>
+      <div class="gen-err" id="genErr" style="display:none"></div>
+      <div class="gen-empty" id="genEmpty">
+        <div style="font-size:44px;margin-bottom:12px">💬</div>
+        <div style="font-size:14px;color:var(--muted)">Välj inställningar och tryck<br><strong>Generera inlägg</strong></div>
+      </div>
+    </main>
   </div>
+</div>
 
-  <!-- DOCUMENT UPLOAD -->
-  <div class="section-label" style="margin-top:24px">Vision & uppdragsdokument</div>
+<!-- ══════════ AGENT PANEL ══════════ -->
+<div class="panel" id="panelAgent">
+  <div class="agent-layout" style="flex:1">
+    <aside class="agent-sidebar">
+      <div class="agent-sidebar-top">
+        <div class="sec-label" style="margin-top:0">Snabbval</div>
+        <div class="qa-list">
+          <button class="qa-btn" onclick="agentQuick('new_post')"><span class="qa-icon">✍️</span><div><div class="qa-label">Nytt inlägg</div><div class="qa-sub">IG & Facebook</div></div></button>
+          <button class="qa-btn" onclick="agentQuick('reply_comment')"><span class="qa-icon">💬</span><div><div class="qa-label">Svara på kommentar</div><div class="qa-sub">Klistra in kommentaren</div></div></button>
+          <button class="qa-btn" onclick="agentQuick('rewrite')"><span class="qa-icon">✏️</span><div><div class="qa-label">Skriv om inlägg</div><div class="qa-sub">Förbättra befintlig text</div></div></button>
+          <button class="qa-btn" onclick="agentQuick('content_plan')"><span class="qa-icon">📅</span><div><div class="qa-label">Innehållsplan</div><div class="qa-sub">Veckovis schema</div></div></button>
+        </div>
+      </div>
+      <div class="agent-sidebar-mid">
+        <div class="sec-label" style="margin-top:0">Dokument</div>
+        <div class="doc-status-bar">
+          <div class="doc-dot"></div>
+          <div class="doc-info">
+            <div class="doc-name" id="agentDocName">Brand Bible v1.0</div>
+            <div class="doc-meta" id="agentDocMeta">Inbyggt · 2026-06-07</div>
+          </div>
+        </div>
+        <div class="sec-label">Plattform</div>
+        <div class="agent-plat-row">
+          <button class="a-plat on" data-ap="instagram" onclick="toggleAgentPlat(this)">📸 IG</button>
+          <button class="a-plat on" data-ap="facebook" onclick="toggleAgentPlat(this)">👥 FB</button>
+        </div>
+      </div>
+      <div class="agent-sidebar-bot">
+        <div class="sec-label" style="margin-top:0">Historik</div>
+        <div id="agentHistory"><div class="no-hist">Ingen historik ännu</div></div>
+      </div>
+    </aside>
 
-  <div class="doc-loaded" id="docLoaded">
-    <div class="doc-loaded-icon">✅</div>
-    <div class="doc-loaded-info">
-      <div class="doc-loaded-name" id="docName"></div>
-      <div class="doc-loaded-meta" id="docMeta"></div>
-    </div>
-    <button class="doc-admin-btn" onclick="showAdminPanel()" title="Admin">🔒</button>
-  </div>
-
-  <!-- Admin panel — hidden by default -->
-  <div id="adminPanel" style="display:none;margin-top:8px;border:2px dashed #ddd;border-radius:12px;padding:16px;background:var(--white)">
-    <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:10px">🔐 Adminlösenord</div>
-    <div style="display:flex;gap:8px;margin-bottom:10px">
-      <input type="password" id="adminPwInput" placeholder="Ange lösenord…" style="flex:1;padding:8px 12px;border-radius:8px;border:1.5px solid #ddd;font-size:13px;font-family:inherit;outline:none">
-      <button onclick="verifyAdmin()" style="padding:8px 14px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">OK</button>
-    </div>
-    <div id="adminError" style="display:none;font-size:11px;color:#c62828;margin-bottom:8px">Fel lösenord.</div>
-    <div id="adminUploadSection" style="display:none">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Ladda upp nytt dokument — ersätter inbyggd version:</div>
-      <div class="doc-zone" style="padding:14px">
-        <input type="file" id="docInput" accept=".pdf,.txt,.md,.docx" onchange="handleDocUpload(event)">
-        <div class="doc-icon" style="font-size:22px">📄</div>
-        <div class="doc-title" style="font-size:13px">Välj nytt dokument</div>
-        <div class="doc-sub">PDF, TXT, DOCX eller MD</div>
+    <div class="chat-wrap">
+      <div class="messages" id="agentMessages">
+        <div class="welcome" id="agentWelcome">
+          <div class="welcome-icon">❤️</div>
+          <h2>Hej! Jag är er Social Media Agent</h2>
+          <p>Jag kan skapa inlägg, svara på kommentarer, skriva om texter och planera ert innehåll — alltid baserat på Medmänniska Sveriges värderingar.</p>
+          <div class="welcome-chips">
+            <button class="wchip" onclick="agentQuick('new_post')">✍️ Skapa ett inlägg</button>
+            <button class="wchip" onclick="agentQuick('reply_comment')">💬 Svara på kommentar</button>
+            <button class="wchip" onclick="agentQuick('rewrite')">✏️ Skriv om ett inlägg</button>
+            <button class="wchip" onclick="agentQuick('content_plan')">📅 Innehållsplan</button>
+          </div>
+        </div>
+      </div>
+      <div class="input-bar">
+        <div class="quick-chips">
+          <button class="qchip" onclick="agentSendQuick('Skapa ett Instagram-inlägg om vår matutdelning')">🍲 Matutdelning</button>
+          <button class="qchip" onclick="agentSendQuick('Rekrytera volontärer till oss')">🙋 Volontärer</button>
+          <button class="qchip" onclick="agentSendQuick('Skriv ett inspirerande inlägg om vår organisation')">❤️ Om oss</button>
+          <button class="qchip" onclick="agentSendQuick('Ge mig en innehållsplan för nästa vecka')">📅 Innehållsplan</button>
+          <button class="qchip" onclick="agentSendQuick('Hur svarar jag på en negativ kommentar?')">💬 Kommentarshjälp</button>
+        </div>
+        <div class="input-row">
+          <textarea class="chat-input" id="agentInput" rows="1" placeholder="Skriv ett meddelande…" onkeydown="agentKey(event)" oninput="autoResize(this)"></textarea>
+          <button class="send-btn" id="agentSendBtn" onclick="agentSend()">
+            <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
       </div>
     </div>
-    <div style="margin-top:14px;border-top:1px solid #f0eeeb;padding-top:14px">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Gemini API-nyckel (sparas i webbläsaren):</div>
-      <div style="display:flex;gap:8px">
-        <input type="password" id="adminApiKeyInput" placeholder="AIza…" autocomplete="off"
-          style="flex:1;padding:8px 12px;border-radius:8px;border:1.5px solid #ddd;font-size:13px;font-family:inherit;outline:none">
-        <button onclick="saveApiKey()" style="padding:8px 14px;background:var(--red);color:white;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Spara</button>
+  </div>
+</div>
+
+<!-- ══════════ ADMIN MODAL ══════════ -->
+<div class="modal-overlay" id="adminModal" style="display:none" onclick="if(event.target===this)closeAdmin()">
+  <div class="modal">
+    <h3>🔒 Adminpanel</h3>
+    <p>Ange lösenord för att komma åt inställningar.</p>
+    <div id="adminLock">
+      <div class="modal-field">
+        <div class="mlabel">Lösenord</div>
+        <input type="password" class="minput" id="adminPw" placeholder="Ange lösenord…" onkeydown="if(event.key==='Enter')verifyAdmin()">
       </div>
-      <div id="apiKeySaved" style="display:none;font-size:11px;color:#2E7D32;margin-top:6px">✓ Nyckel sparad — teamet behöver inte ange den.</div>
-      <div id="apiKeyStatus" style="font-size:11px;margin-top:6px;color:var(--muted)"></div>
+      <div class="msg-err" id="adminErr">Fel lösenord.</div>
+      <div class="modal-row">
+        <button class="mbtn secondary" onclick="closeAdmin()">Avbryt</button>
+        <button class="mbtn primary" onclick="verifyAdmin()">Logga in</button>
+      </div>
+    </div>
+    <div id="adminPanel" style="display:none">
+      <div class="modal-field">
+        <div class="mlabel">Gemini API-nyckel</div>
+        <input type="password" class="minput" id="adminApiKey" placeholder="AIza…" autocomplete="off">
+        <div class="msg-ok" id="keySaved">✓ Nyckel sparad!</div>
+      </div>
+      <div class="modal-field">
+        <div class="mlabel">Ladda upp nytt Brand Bible-dokument</div>
+        <div class="upload-zone">
+          <input type="file" accept=".pdf,.txt,.md,.docx" onchange="handleDocUpload(event)">
+          <div style="font-size:20px;margin-bottom:4px">📄</div>
+          <div style="font-size:12px;font-weight:600;color:var(--navy-mid)">Välj fil</div>
+          <div style="font-size:11px;color:var(--muted)">PDF, TXT, DOCX eller MD</div>
+        </div>
+        <div class="msg-ok" id="docUploaded" style="display:none"></div>
+      </div>
+      <div class="modal-row">
+        <button class="mbtn secondary" onclick="closeAdmin()">Stäng</button>
+        <button class="mbtn primary" onclick="saveApiKey()">Spara nyckel</button>
+      </div>
     </div>
   </div>
-
-  <div id="docProcessing" class="doc-processing" style="display:none">
-    <div class="spinner"></div>
-    <span>Läser in dokumentet…</span>
-  </div>
-
-  <div id="docWarning" class="doc-warning" style="display:none"></div>
-
-  <!-- INSTÄLLNINGAR -->
-  <div class="section-label">Tema</div>
-  <div class="pills" id="themePills">
-    <button class="pill on" data-v="food">🍲 Matutdelning</button>
-    <button class="pill" data-v="volunteer">🙋 Bli volontär</button>
-    <button class="pill" data-v="general">❤️ Om oss</button>
-  </div>
-
-  <div class="section-label">Målgrupp</div>
-  <div class="pills" id="audiencePills">
-    <button class="pill on" data-v="volunteers">Volontärer</button>
-    <button class="pill on" data-v="help">Behövande</button>
-    <button class="pill on" data-v="donors">Donationer</button>
-    <button class="pill on" data-v="public">Allmänheten</button>
-  </div>
-
-  <div class="section-label">Plattform</div>
-  <div class="platforms">
-    <button class="plat on" data-v="instagram">📸 Instagram</button>
-    <button class="plat on" data-v="facebook">👥 Facebook</button>
-  </div>
-
-  <div class="section-label">Ton</div>
-  <select id="toneSelect">
-    <option value="warm">Varm & hjärtlig</option>
-    <option value="urgent">Angelägen & engagerande</option>
-    <option value="grateful">Tacksam & inspirerande</option>
-    <option value="informative">Informativ & tydlig</option>
-  </select>
-
-  <div class="section-label">Eget tillägg (valfritt)</div>
-  <textarea id="customNote" placeholder="T.ex. nästa utdelning är söndag 15 juni kl 18:00 vid Carl Johans kyrka…"></textarea>
-
-  <div class="section-label">Hashtags</div>
-  <div class="toggle-row">
-    <span style="font-size:14px">Inkludera hashtags</span>
-    <button class="toggle on" id="hashToggle"></button>
-  </div>
-
-  <!-- API key hidden input — populated from sessionStorage -->
-  <input type="hidden" id="apiKeyInput">
-
-  <button class="gen-btn" id="genBtn">✨ Generera inlägg</button>
-
-  <div id="errorBox" class="err" style="display:none"></div>
-
-  <div id="outputHead" class="output-head" style="display:none">
-    <div class="output-title">Dina inlägg</div>
-    <span class="count-badge" id="countBadge"></span>
-  </div>
-  <div class="posts" id="postsWrap"></div>
-
-  <div class="empty" id="emptyState">
-    <div class="empty-icon">💬</div>
-    <div style="font-size:15px;color:var(--muted)">Välj inställningar och tryck<br><strong>Generera inlägg</strong></div>
-  </div>
-
 </div>
 
 <script>
-// ─── Version ─────────────────────────────────────────────
-const APP_VERSION = "1.6.0";
+// ── Constants ──────────────────────────────────────────────
+const APP_VERSION = "3.1.0";
 const APP_DATE    = "2026-06-07";
 
-// ─── Embedded Brand Bible ────────────────────────────────
-const EMBEDDED_DOC = `MEDMÄNNISKA SVERIGE - FULL AI BRAND BIBLE
-VERSION: 1.0
-SENAST UPPDATERAD: 2026-06-07
+const BRAND_BIBLE = `MEDMÄNNISKA SVERIGE - FULL AI BRAND BIBLE | VERSION 1.0 | 2026-06-07
 
-==================================================
-SYFTE
-==================================================
-Detta dokument är den centrala kunskapsbasen för all AI-genererad kommunikation,
-sociala medier, marknadsföring, volontärrekrytering, partnerskap och extern kommunikation.
+IDENTITET: Medmänniska Sverige | Slogan: En hjälpande hand.
+Vi hjälper utan krav. Vi hjälper utan att döma. Vi hjälper med värdighet.
 
-När nya beslut, projekt, riktlinjer eller strategier tas fram inom Medmänniska Sverige
-ska detta dokument uppdateras och ersätta tidigare version.
+VISION: Ett Sverige där ingen människa lämnas ensam i utsatthet.
+MISSION: Att ge praktiskt, mänskligt och värdigt stöd till människor i ekonomisk, social eller personlig utsatthet.
 
-==================================================
-ORGANISATIONENS IDENTITET
-==================================================
-Namn: Medmänniska Sverige
-Slogan: En hjälpande hand.
+KÄRNVÄRDEN: Människan först · Värdighet · Medmänsklighet · Ansvar · Gemenskap
+PERSONLIGHET: Varm · Trygg · Ärlig · Ödmjuk · Handlingskraftig · Inkluderande
+ALDRIG: Politiska · Dömande · Byråkratiska · Kalla · Moraliserande
 
-Vi är en modern hjälporganisation som sätter människan först.
-Vi tror att ingen människa ska behöva känna sig ensam, bortglömd eller utan hjälp.
-Vi hjälper utan krav.
-Vi hjälper utan att döma.
-Vi hjälper med värdighet.
+PROJEKT: Matutdelning (tors & sön kl 18:00 Carl Johans kyrka Göteborg) · Medmänniska Uppsökande · Trygg Medmänniska · Klädhjälp · Samtal & Gemenskap · Praktisk Vardagshjälp · Akut Stöd
 
-==================================================
-VISION
-==================================================
-Ett Sverige där ingen människa lämnas ensam i utsatthet.
+VOLONTÄRER: Organisationens hjärta. "Du behöver inte förändra världen. Du kan förändra någons dag."
+MÅL SOCIALA MEDIER: Rekrytera volontärer · Bygga förtroende · Visa samhällsnytta · Inspirera · Attrahera partners · Bygga varumärket
 
-==================================================
-MISSION
-==================================================
-Att ge praktiskt, mänskligt och värdigt stöd till människor i ekonomisk,
-social eller personlig utsatthet.
+TONALITET: Varm · Äkta · Hoppfull · Professionell · Mänsklig · Respektfull · Inkluderande
+KÄNSLOR INLÄGG SKA SKAPA: Hopp · Gemenskap · Inspiration · Tacksamhet · Handlingskraft · Förtroende
 
-==================================================
-KÄRNVÄRDEN
-==================================================
-1. Människan först
-2. Värdighet
-3. Medmänsklighet
-4. Ansvar
-5. Gemenskap
+ANVÄND: medmänsklighet · gemenskap · värdighet · hjälpande hand · respekt · omtanke · värme · trygghet · hopp · tillsammans
+UNDVIK: offer · problemgrupp · samhällsbörda · hopplös · belastning
 
-==================================================
-ORGANISATIONENS PERSONLIGHET
-==================================================
-Varm
-Trygg
-Ärlig
-Ödmjuk
-Handlingskraftig
-Pålitlig
-Inkluderande
+INSTAGRAM: Gemenskap, känslor, emoji-vänlig, visuell, max 2200 tecken
+FACEBOOK: Längre berättelser, volontärrekrytering, event, max 1500 tecken
 
-Vi är aldrig:
-Politiska
-Dömande
-Byråkratiska
-Kalla
-Moraliserande
+AI-REGLER: Sätt alltid människan först. Skriv varmt och mänskligt. Visa hopp. Undvik politik och skuld.`;
 
-==================================================
-VÅRA PROJEKT
-==================================================
-- Matutdelning
-- Medmänniska Uppsökande
-- Trygg Medmänniska
-- Klädhjälp
-- Samtal & Gemenskap
-- Praktisk Vardagshjälp
-- Akut Stöd
+// ── Shared state ───────────────────────────────────────────
+const shared = {
+  apiKey: "",
+  docText: BRAND_BIBLE,
+  docName: "Brand Bible v1.0",
+  docDate: "2026-06-07"
+};
 
-==================================================
-VAD SOM GÖR OSS ANNORLUNDA
-==================================================
-Vi fokuserar på människan istället för systemet.
-Vi arbetar lokalt, snabbt, praktiskt och personligt.
-Vi vill vara den mest mänskliga hjälporganisationen i Sverige.
-
-==================================================
-VOLONTÄRFILOSOFI
-==================================================
-Volontärer är organisationens hjärta.
-Att vara volontär handlar om att ge, hjälpa och skapa värde för andra.
-Alla människor ska behandlas med respekt.
-Donationer och mat är till för människor i behov.
-All hjälp ska förmedlas värdigt och rättvist.
-
-==================================================
-SOCIALA MEDIER - HUVUDMÅL
-==================================================
-1. Rekrytera volontärer
-2. Bygga förtroende
-3. Visa samhällsnytta
-4. Inspirera människor att hjälpa
-5. Attrahera partners
-6. Skapa engagemang
-7. Bygga varumärket Medmänniska Sverige
-
-==================================================
-MÅLGRUPPER
-==================================================
-1. Potentiella volontärer
-2. Människor som behöver hjälp
-3. Företag och samarbetspartners
-4. Kommuner och organisationer
-5. Allmänheten
-
-==================================================
-TONALITET
-==================================================
-All kommunikation ska vara:
-- Varm
-- Äkta
-- Hoppfull
-- Professionell
-- Mänsklig
-- Respektfull
-- Inkluderande
-
-==================================================
-KÄNSLOR SOM INLÄGG SKA SKAPA
-==================================================
-- Hopp
-- Gemenskap
-- Inspiration
-- Tacksamhet
-- Handlingskraft
-- Förtroende
-
-==================================================
-ORD SOM OFTA SKA ANVÄNDAS
-==================================================
-medmänsklighet
-gemenskap
-värdighet
-hjälpande hand
-respekt
-omtanke
-värme
-trygghet
-hopp
-tillsammans
-
-==================================================
-ORD SOM SKA UNDVIKAS
-==================================================
-offer
-problemgrupp
-samhällsbörda
-hopplös
-belastning
-
-==================================================
-INNEHÅLLSMIX
-==================================================
-40% verksamheten
-25% berättelser
-15% volontärrekrytering
-10% partnerskap
-10% fakta och samhällsfrågor
-
-==================================================
-FACEBOOK
-==================================================
-Längre berättelser, verksamhetsuppdateringar,
-volontärrekrytering och event.
-
-==================================================
-INSTAGRAM
-==================================================
-Gemenskap, känslor, bilder, reels,
-verkliga människor och vardagshjältar.
-
-==================================================
-LINKEDIN
-==================================================
-Partnerskap, samhällsnytta,
-hållbarhet och organisationsutveckling.
-
-==================================================
-BILDMANÉR
-==================================================
-Visa:
-- Riktiga människor
-- Riktiga volontärer
-- Gemenskap
-- Matutdelning
-- Värme
-- Respekt
-
-Undvik:
-- Chockbilder
-- Integritetskränkande bilder
-- Överdriven misär
-- Orealistiska AI-bilder
-
-==================================================
-PARTNERSKAP
-==================================================
-Lyft fram företag som bidrar till samhällsnytta.
-Visa tacksamhet.
-Fokusera på den positiva skillnaden samarbetet gör.
-
-==================================================
-VOLONTÄRREKRYTERING
-==================================================
-Budskap:
-Du behöver inte förändra världen.
-Du kan förändra någons dag.
-
-Alla kan bidra.
-Alla behövs.
-
-==================================================
-AI MASTERPROMPT
-==================================================
-Du representerar Medmänniska Sverige.
-
-Sätt alltid människan först.
-Skriv varmt, mänskligt och professionellt.
-Visa hopp.
-Visa konkret samhällsnytta.
-Inspirera människor att hjälpa.
-Undvik politik.
-Undvik skuld.
-Undvik sensationsjournalistik.
-
-Målet är att bygga Sveriges mest mänskliga hjälporganisation.
-
-==================================================
-FRAMTIDA UPPDATERINGAR
-==================================================
-När nya projekt, policys, volontärrutiner, partnerskap,
-sociala medier-strategier eller organisationsbeslut tas fram
-ska detta dokument uppdateras och versionsnumret höjas.`;
-const EMBEDDED_DOC_NAME = "Medmanniska_Sverige_Full_Brand_Bible_v1.txt";
-const EMBEDDED_DOC_DATE = "2026-06-07";
-
-// ─── State ────────────────────────────────────────────────
-const state = {
+// Generator state
+const genState = {
   theme: "food",
   audiences: ["volunteers","help","donors","public"],
   platforms: ["instagram","facebook"],
-  tone: "warm",
-  hashtags: true,
-  custom: "",
-  docText: EMBEDDED_DOC,
-  docName: EMBEDDED_DOC_NAME,
-  docUploadedAt: EMBEDDED_DOC_DATE,
-  docType: "text",
-  docIsEmbedded: true
+  hashtags: true
 };
 
-// ─── Document upload ──────────────────────────────────────
-const MAMMOTH_CDN = "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js";
-let mammothLoaded = false;
+// Agent state
+const agentState = {
+  platforms: ["instagram","facebook"],
+  history: [],
+  convHistory: []
+};
 
-async function loadMammoth() {
-  if (mammothLoaded) return;
-  return new Promise((res, rej) => {
-    const s = document.createElement("script");
-    s.src = MAMMOTH_CDN;
-    s.onload = () => { mammothLoaded = true; res(); };
-    s.onerror = rej;
-    document.head.appendChild(s);
-  });
-}
-
-async function handleDocUpload(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  showProcessing();
-  clearWarning();
-
-  try {
-    const ext = file.name.split(".").pop().toLowerCase();
-    let text = "";
-
-    if (ext === "pdf") {
-      text = await readPdfAsBase64(file);
-      state.docType = "pdf";
-    } else if (ext === "docx") {
-      await loadMammoth();
-      const arr = await file.arrayBuffer();
-      const result = await mammoth.extractRawText({ arrayBuffer: arr });
-      text = result.value;
-      state.docType = "text";
-    } else {
-      // txt / md
-      text = await file.text();
-      state.docType = "text";
-    }
-
-    if (!text || text.trim().length < 20) {
-      throw new Error("Dokumentet verkar vara tomt eller kunde inte läsas.");
-    }
-
-    state.docText = text;
-    state.docName = file.name;
-    state.docUploadedAt = new Date().toISOString();
-
-    // Store in sessionStorage so it survives re-renders but not page reload
-    try {
-      if (state.docType === "text") {
-        sessionStorage.setItem("ms_doc_text", text);
-        sessionStorage.setItem("ms_doc_name", file.name);
-        sessionStorage.setItem("ms_doc_type", "text");
-        sessionStorage.setItem("ms_doc_uploaded_at", state.docUploadedAt);
-      }
-    } catch(_) {}
-
-    showDocLoaded(file.name, state.docUploadedAt, false);
-    document.getElementById('adminPanel').style.display = 'none';
-    lockDocState();
-  } catch(err) {
-    showWarning("⚠️ " + (err.message || "Kunde inte läsa filen. Prova TXT eller MD-format."));
-    showUploadZone();
-  }
-
-  // Reset input so same file can be re-uploaded
-  e.target.value = "";
-}
-
-// For PDF: send as base64 to Claude (Claude API supports PDF natively)
-function readPdfAsBase64(file) {
-  return new Promise((res, rej) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      // store base64 data
-      state._pdfBase64 = reader.result.split(",")[1];
-      state._pdfMediaType = "application/pdf";
-      res("[PDF — läses direkt av AI]");
-    };
-    reader.onerror = rej;
-    reader.readAsDataURL(file);
-  });
-}
-
-function removeDoc() {
-  state.docText = null; state.docName = null; state.docType = null; state.docUploadedAt = null;
-  state._pdfBase64 = null;
-  try { sessionStorage.removeItem("ms_doc_text"); sessionStorage.removeItem("ms_doc_name"); sessionStorage.removeItem("ms_doc_type"); sessionStorage.removeItem("ms_doc_uploaded_at"); } catch(_){}
-  showUploadZone();
-  clearWarning();
-}
-
-function showProcessing() {
-  document.getElementById("docLoaded").style.display = "none";
-  document.getElementById("docProcessing").style.display = "flex";
-}
-function showUploadZone() {
-  document.getElementById("docLoaded").style.display = "flex";
-  document.getElementById("docProcessing").style.display = "none";
-}
-function showDocLoaded(name, isoTimestamp, isEmbedded) {
-  document.getElementById("docProcessing").style.display = "none";
-  document.getElementById("docLoaded").style.display = "flex";
-  document.getElementById("docName").textContent = name;
-  let timeStr = "";
-  try {
-    const d = new Date(isoTimestamp);
-    timeStr = isNaN(d) ? isoTimestamp : d.toLocaleString("sv-SE", { dateStyle:"short", timeStyle:"short" });
-  } catch(_) { timeStr = isoTimestamp || ""; }
-  const label = isEmbedded ? "Inbyggt dokument · Version " + EMBEDDED_DOC_DATE : "Uppladdad: " + timeStr;
-  document.getElementById("docMeta").textContent = label + " · Används som källa för alla inlägg";
-}
-
-function showAdminPanel() {
-  const panel = document.getElementById("adminPanel");
-  panel.style.display = panel.style.display === "none" ? "block" : "none";
-  document.getElementById("adminPwInput").value = "";
-  document.getElementById("adminError").style.display = "none";
-  document.getElementById("adminUploadSection").style.display = "none";
-}
-
-function verifyAdmin() {
-  const pw = document.getElementById("adminPwInput").value;
-  const ADMIN_PW = "mm2026admin";
-  if (pw === ADMIN_PW) {
-    document.getElementById("adminError").style.display = "none";
-    document.getElementById("adminUploadSection").style.display = "block";
-    // Show current key status
-    const existingKey = sessionStorage.getItem("ms_gemini_key") || localStorage.getItem("ms_gemini_key");
-    const statusEl = document.getElementById("apiKeyStatus");
-    if (existingKey) {
-      statusEl.textContent = "✓ Nyckel redan sparad: " + existingKey.slice(0,8) + "…";
-      statusEl.style.color = "#2E7D32";
-    } else {
-      statusEl.textContent = "Ingen nyckel sparad ännu.";
-      statusEl.style.color = "#E07060";
-    }
-  } else {
-    document.getElementById("adminError").style.display = "block";
-    document.getElementById("adminUploadSection").style.display = "none";
-  }
-}
-
-function saveApiKey() {
-  const key = document.getElementById("adminApiKeyInput").value.trim();
-  if (!key) return;
-  // Save to both sessionStorage and localStorage so it persists across sessions
-  try { sessionStorage.setItem("ms_gemini_key", key); } catch(_) {}
-  try { localStorage.setItem("ms_gemini_key", key); } catch(_) {}
-  // Also update the hidden input so generate() works immediately
-  document.getElementById("apiKeyInput").value = key;
-  document.getElementById("adminApiKeyInput").value = "";
-  document.getElementById("apiKeySaved").style.display = "block";
-  const statusEl = document.getElementById("apiKeyStatus");
-  statusEl.textContent = "✓ Nyckel sparad: " + key.slice(0,8) + "…";
-  statusEl.style.color = "#2E7D32";
-  setTimeout(() => { document.getElementById("apiKeySaved").style.display = "none"; }, 3000);
-}
-function showWarning(msg) { const w = document.getElementById("docWarning"); w.textContent = msg; w.style.display = "block"; }
-function clearWarning() { document.getElementById("docWarning").style.display = "none"; }
-
-// Set version badge
-document.getElementById("versionBadge").textContent = "v" + APP_VERSION + " · " + APP_DATE;
-
-// Restore API key from storage (session first, then local for persistence)
+// ── Init ───────────────────────────────────────────────────
+document.getElementById("versionTag").textContent = "v" + APP_VERSION;
 try {
-  const k = sessionStorage.getItem("ms_gemini_key") || localStorage.getItem("ms_gemini_key");
-  if (k) {
-    document.getElementById("apiKeyInput").value = k;
-    // Keep in sync
-    sessionStorage.setItem("ms_gemini_key", k);
-  }
-} catch(_){}
-try {
-  const t = sessionStorage.getItem("ms_doc_text");
-  const n = sessionStorage.getItem("ms_doc_name");
-  const at = sessionStorage.getItem("ms_doc_uploaded_at");
-  if (t && n) { state.docText = t; state.docName = n; state.docType = "text"; state.docUploadedAt = at; state.docIsEmbedded = false; showDocLoaded(n, at || new Date().toISOString(), false); }
+  const k = localStorage.getItem("ms_gemini_key") || sessionStorage.getItem("ms_gemini_key");
+  if (k) { shared.apiKey = k; document.getElementById("genApiKey").value = k; }
 } catch(_){}
 
-// Drag & drop on admin upload zone
-const adminZone = document.getElementById("docInput")?.closest(".doc-zone");
-if (adminZone) {
-  adminZone.addEventListener("dragover", e => { e.preventDefault(); adminZone.classList.add("drag"); });
-  adminZone.addEventListener("dragleave", () => adminZone.classList.remove("drag"));
-  adminZone.addEventListener("drop", e => {
-    e.preventDefault(); adminZone.classList.remove("drag");
-    const file = e.dataTransfer.files[0];
-    if (file) { const dt = new DataTransfer(); dt.items.add(file); document.getElementById("docInput").files = dt.files; handleDocUpload({ target: { files: dt.files, value: "" } }); }
-  });
+// ── Mode switch ────────────────────────────────────────────
+function switchMode(mode) {
+  document.getElementById("panelGenerator").classList.toggle("active", mode === "generator");
+  document.getElementById("panelAgent").classList.toggle("active", mode === "agent");
+  document.getElementById("btnGenerator").classList.toggle("active", mode === "generator");
+  document.getElementById("btnAgent").classList.toggle("active", mode === "agent");
 }
 
-// Show embedded doc on load (if no session override)
-const _sessionDoc = (() => { try { return sessionStorage.getItem("ms_doc_text"); } catch(_) { return null; } })();
-if (!_sessionDoc) {
-  showDocLoaded(EMBEDDED_DOC_NAME, EMBEDDED_DOC_DATE, true);
+// ── Generator pills ────────────────────────────────────────
+document.querySelectorAll("#genTheme .pill").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("#genTheme .pill").forEach(x => x.classList.remove("on"));
+  b.classList.add("on"); genState.theme = b.dataset.v;
+}));
+document.querySelectorAll("#genAudience .pill").forEach(b => b.addEventListener("click", () => {
+  const v = b.dataset.v;
+  if (genState.audiences.includes(v)) { if (genState.audiences.length > 1) { genState.audiences = genState.audiences.filter(x => x !== v); b.classList.remove("on"); } }
+  else { genState.audiences.push(v); b.classList.add("on"); }
+}));
+function toggleGenPlat(btn) {
+  const v = btn.dataset.gp;
+  if (genState.platforms.includes(v)) { if (genState.platforms.length > 1) { genState.platforms = genState.platforms.filter(x => x !== v); btn.classList.remove("on"); } }
+  else { genState.platforms.push(v); btn.classList.add("on"); }
+}
+function toggleAgentPlat(btn) {
+  const v = btn.dataset.ap;
+  if (agentState.platforms.includes(v)) { if (agentState.platforms.length > 1) { agentState.platforms = agentState.platforms.filter(x => x !== v); btn.classList.remove("on"); } }
+  else { agentState.platforms.push(v); btn.classList.add("on"); }
 }
 
-// ─── Controls ─────────────────────────────────────────────
-document.querySelectorAll("#themePills .pill").forEach(b => {
-  b.addEventListener("click", () => {
-    document.querySelectorAll("#themePills .pill").forEach(x => x.classList.remove("on"));
-    b.classList.add("on"); state.theme = b.dataset.v;
-  });
-});
-document.querySelectorAll("#audiencePills .pill").forEach(b => {
-  b.addEventListener("click", () => {
-    const v = b.dataset.v;
-    if (state.audiences.includes(v)) { if (state.audiences.length > 1) { state.audiences = state.audiences.filter(x => x !== v); b.classList.remove("on"); } }
-    else { state.audiences.push(v); b.classList.add("on"); }
-  });
-});
-document.querySelectorAll(".plat").forEach(b => {
-  b.addEventListener("click", () => {
-    const v = b.dataset.v;
-    if (state.platforms.includes(v)) { if (state.platforms.length > 1) { state.platforms = state.platforms.filter(x => x !== v); b.classList.remove("on"); } }
-    else { state.platforms.push(v); b.classList.add("on"); }
-  });
-});
-document.getElementById("toneSelect").addEventListener("change", e => state.tone = e.target.value);
-document.getElementById("customNote").addEventListener("input", e => state.custom = e.target.value);
-const hashToggle = document.getElementById("hashToggle");
-hashToggle.addEventListener("click", () => { state.hashtags = !state.hashtags; hashToggle.classList.toggle("on", state.hashtags); });
-
-// ─── Generate ─────────────────────────────────────────────
-document.getElementById("genBtn").addEventListener("click", generate);
-
+// ── Generator ──────────────────────────────────────────────
 const THEME_MAP = {
-  food: "matutdelning — vi delar ut mat till behövande varje torsdag och söndag kl 18:00 vid Carl Johans kyrka i Göteborg",
-  volunteer: "rekrytering av volontärer och frivilligarbete — vi söker engagerade människor som vill hjälpa till",
-  general: "vad Medmänniska Sverige är och gör — vår vision, vårt uppdrag och vår plats i samhället"
+  food:"matutdelning och matstöd till behövande i Göteborg",
+  volunteer:"rekrytering av volontärer och frivilligarbete",
+  general:"vad Medmänniska Sverige är och gör"
 };
-const AUDIENCE_MAP = {
-  volunteers: "potentiella volontärer som vill göra en insats",
-  help: "människor i utsatta situationer som kan behöva vår hjälp",
-  donors: "potentiella donationer och sponsors",
-  public: "allmänheten för att öka kännedom och synlighet"
+const AUD_MAP = {
+  volunteers:"potentiella volontärer",
+  help:"människor i utsatta situationer",
+  donors:"potentiella donationer och sponsors",
+  public:"allmänheten"
 };
 const TONE_MAP = {
-  warm: "varm, hjärtlig och personlig — som att tala direkt från hjärtat",
-  urgent: "angelägen och mobiliserande — varje insats räknas nu",
-  grateful: "tacksam, inspirerande och hoppfull",
-  informative: "informativ och tydlig — konkret utan att bli opersonlig"
+  warm:"varm, hjärtlig och personlig",
+  urgent:"angelägen och mobiliserande",
+  grateful:"tacksam, inspirerande och hoppfull",
+  informative:"informativ och tydlig"
 };
-const PLATFORM_MAP = {
-  instagram: "Instagram (max 2200 tecken, gärna emoji, känslostyrd och visuell)",
-  facebook: "Facebook (max 1500 tecken, lite mer berättande och personlig)"
+const PLAT_MAP = {
+  instagram:"Instagram (max 2200 tecken, emoji-vänlig)",
+  facebook:"Facebook (max 1500 tecken, berättande)"
 };
 
-// Lock docText from easy console inspection
-function lockDocState() {
-  if (state.docText) {
-    Object.defineProperty(state, "_lockedDoc", { value: state.docText, writable: true, enumerable: false, configurable: true });
-    Object.defineProperty(state, "docText", {
-      get() { return this._lockedDoc; },
-      set(v) { this._lockedDoc = v; },
-      enumerable: false, configurable: true
-    });
-  }
-}
+async function runGenerator() {
+  if (!shared.apiKey) { showGenErr("Ingen API-nyckel. Öppna 🔒 Admin och ange din Gemini-nyckel."); return; }
+  const btn = document.getElementById("genRunBtn");
+  btn.disabled = true; btn.textContent = "⏳ Genererar…";
+  document.getElementById("genErr").style.display = "none";
+  document.getElementById("genPosts").innerHTML = "";
+  document.getElementById("genOutputHead").style.display = "none";
+  document.getElementById("genEmpty").style.display = "none";
 
-async function generate() {
-  const btn = document.getElementById("genBtn");
-  btn.disabled = true; btn.textContent = "⏳ Genererar...";
-  // Persist key
-  try { const k = document.getElementById("apiKeyInput").value.trim(); if(k) { sessionStorage.setItem("ms_gemini_key", k); localStorage.setItem("ms_gemini_key", k); } } catch(_){}
-  document.getElementById("errorBox").style.display = "none";
-  document.getElementById("postsWrap").innerHTML = "";
-  document.getElementById("outputHead").style.display = "none";
-  document.getElementById("emptyState").style.display = "none";
+  const aud = genState.audiences.map(a => AUD_MAP[a]).join(", ");
+  const plats = genState.platforms.map(p => PLAT_MAP[p]).join(" och ");
+  const tone = TONE_MAP[document.getElementById("genTone").value];
+  const custom = document.getElementById("genCustom").value.trim();
+  const hash = genState.hashtags ? "Inkludera 5–7 hashtags." : "Inga hashtags.";
 
-  const audiences = state.audiences.map(a => AUDIENCE_MAP[a]).join(", ");
-  const platforms = state.platforms.map(p => PLATFORM_MAP[p]).join(" och ");
-  const hashLine = state.hashtags ? "Inkludera 5–8 relevanta svenska och engelska hashtags i slutet, separerade med mellanslag." : "Inga hashtags.";
-  const customLine = state.custom ? `Inkludera denna information naturligt: "${state.custom}"` : "";
+  const systemP = `Du är kommunikationsansvarig för Medmänniska Sverige.\n\nBRAND BIBLE:\n${shared.docText}\n\nSkriv alltid på svenska. Tala varmt och mänskligt.`;
+  const userP = `Skapa inlägg för Medmänniska Sverige.
+Tema: ${THEME_MAP[genState.theme]}
+Målgrupp: ${aud}
+Plattformar: ${plats}
+Ton: ${tone}
+${hash}
+${custom ? 'Inkludera naturligt: "' + custom + '"' : ""}
 
-  const baseSystem = `Du är kommunikationsansvarig för Medmänniska Sverige, en ideell organisation i Göteborg.
-
-GRUNDIDENTITET (används alltid):
-- Namn: Medmänniska Sverige | Slogan: "En hjälpande hand"
-- Verksamhet: Matutdelning varje torsdag och söndag kl 18:00 vid Carl Johans kyrka i Göteborg
-- Grundvärden: Värme & gemenskap · Värdighet & respekt · Hopp & förändring · Handling & engagemang · Medmänsklighet · Kärlek
-- Tala nära och mänskligt — aldrig institutionellt
-- Lyft det konkreta mötet mellan människor
-- Inspirera till handling utan att skuldbelägga
-- Skriv alltid på svenska`;
-
-  const docSection = state.docText && state.docType === "text"
-    ? `\n\nORGANISATIONENS VISION & UPPDRAG (laddat dokument — prioritera detta som källa):\n"""\n${state.docText.slice(0, 6000)}\n"""`
-    : "";
-
-  const userPrompt = `Skapa sociala medieinlägg för Medmänniska Sverige.
-
-Tema: ${THEME_MAP[state.theme]}
-Målgrupp: ${audiences}
-Plattformar: ${platforms}
-Ton: ${TONE_MAP[state.tone]}
-${hashLine}
-${customLine}
-
-Generera ETT kort inlägg (max 400 tecken) per angiven plattform.
-Svara ENBART med detta JSON, ingenting annat:
-{"posts":[{"platform":"instagram","text":"INLÄGGSTEXT HÄR","hashtags":"#tag1 #tag2 #tag3"},{"platform":"facebook","text":"INLÄGGSTEXT HÄR","hashtags":"#tag1 #tag2 #tag3"}]}`;
-
-  // Build messages — if PDF, send as document block
-  let messages;
-  if (state.docType === "pdf" && state._pdfBase64) {
-    messages = [{
-      role: "user",
-      content: [
-        { type: "document", source: { type: "base64", media_type: "application/pdf", data: state._pdfBase64 } },
-        { type: "text", text: "Detta är organisationens vision- och uppdragsdokument. Använd det som primär källa.\n\n" + userPrompt }
-      ]
-    }];
-  } else {
-    messages = [{ role: "user", content: userPrompt }];
-  }
+Generera ETT inlägg per plattform. Svara ENBART med JSON:
+{"posts":[{"platform":"instagram","text":"...","hashtags":"#tag1 #tag2"},{"platform":"facebook","text":"...","hashtags":"#tag1 #tag2"}]}`;
 
   try {
-    // Build Gemini request
-    const geminiKey = document.getElementById("apiKeyInput").value.trim();
-    if (!geminiKey) throw new Error("Ange din Gemini API-nyckel i fältet ovan.");
-
-    const geminiBody = {
-      system_instruction: { parts: [{ text: baseSystem + docSection }] },
-      contents: [],
-      generationConfig: { temperature: 0.7, maxOutputTokens: 2500 }
-    };
-
-    // Build content parts
-    const parts = [];
-    if (state.docType === "pdf" && state._pdfBase64) {
-      parts.push({ inline_data: { mime_type: "application/pdf", data: state._pdfBase64 } });
-      parts.push({ text: "Detta är organisationens vision- och uppdragsdokument. Använd det som primär källa.\n\n" + userPrompt });
-    } else {
-      parts.push({ text: userPrompt });
-    }
-    geminiBody.contents.push({ role: "user", parts });
-
-    // Try primary model, fallback to gemini-2.0-flash on overload
-    const models = ["gemini-2.5-flash", "gemini-2.0-flash"];
-    let data, lastError;
-
-    for (let attempt = 0; attempt < models.length; attempt++) {
-      const model = models[attempt];
-      if (attempt > 0) {
-        btn.textContent = `⏳ Försöker reservmodell…`;
-        await new Promise(r => setTimeout(r, 2000));
-      }
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
-        { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(geminiBody) }
-      );
-      data = await res.json();
-      if (data.error) {
-        const msg = data.error.message || "";
-        // If overloaded or quota, try next model
-        if (msg.toLowerCase().includes("demand") || msg.includes("429") || msg.includes("quota") || res.status === 429 || res.status === 503) {
-          lastError = msg;
-          continue;
-        }
-        throw new Error(msg || JSON.stringify(data.error));
-      }
-      lastError = null;
-      break;
-    }
-
-    // Wipe PDF base64 immediately after send
-    if (state._pdfBase64) state._pdfBase64 = null;
-
-    if (lastError) throw new Error("Gemini är överbelastad just nu — försök igen om en stund.");
-
-    // Check finish reason
-    const finishReason = data.candidates?.[0]?.finishReason;
-    if (finishReason && finishReason !== "STOP" && finishReason !== "MAX_TOKENS") {
-      throw new Error("Gemini avbröt svaret: " + finishReason);
-    }
-
-    let raw = data.candidates?.[0]?.content?.parts?.map(p => p.text || "").join("") || "";
-    // Strip markdown fences
-    raw = raw.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
-
-    // Try to extract JSON object even if truncated
+    const raw = await callGemini(systemP, userP, []);
+    const clean = raw.replace(/\`\`\`json\s*/gi,"").replace(/\`\`\`\s*/g,"").trim();
     let parsed;
-    try {
-      parsed = JSON.parse(raw);
-    } catch(_) {
-      // Try to find and repair truncated JSON
-      const start = raw.indexOf('{');
-      if (start === -1) throw new Error("Kunde inte tolka svaret från AI. Försök igen.");
-      let candidate = raw.slice(start);
-      // Close any open structures
-      const opens = (candidate.match(/\{/g)||[]).length - (candidate.match(/\}/g)||[]).length;
-      for (let i = 0; i < opens; i++) candidate += "}";
-      // Fix truncated string values
-      candidate = candidate.replace(/:\s*"([^"]*?)$/m, ': "$1"');
-      try {
-        parsed = JSON.parse(candidate);
-      } catch(e2) {
-        throw new Error("AI:n returnerade ett ofullständigt svar. Försök igen.");
-      }
+    try { parsed = JSON.parse(clean); }
+    catch(_) {
+      const s = clean.indexOf("{"), e = clean.lastIndexOf("}");
+      parsed = JSON.parse(clean.slice(s, e+1));
     }
-
-    if (!parsed.posts || !Array.isArray(parsed.posts)) throw new Error("Oväntat svarsformat. Försök igen.");
-    renderPosts(parsed.posts);
+    renderGenPosts(parsed.posts);
   } catch(e) {
-    const eb = document.getElementById("errorBox");
-    eb.textContent = "⚠️ Något gick fel: " + e.message;
-    eb.style.display = "block";
-    document.getElementById("emptyState").style.display = "block";
+    showGenErr("⚠️ " + e.message);
+    document.getElementById("genEmpty").style.display = "block";
   } finally {
     btn.disabled = false; btn.textContent = "✨ Generera inlägg";
   }
 }
 
-// ─── Render ───────────────────────────────────────────────
-const PLAT_META = {
-  instagram: { label:"Instagram", badge:"badge-ig", max:2200 },
-  facebook:  { label:"Facebook",  badge:"badge-fb", max:1500 }
-};
+function showGenErr(msg) { const el = document.getElementById("genErr"); el.textContent = msg; el.style.display = "block"; }
 
-function renderPosts(posts) {
-  const wrap = document.getElementById("postsWrap");
-  wrap.innerHTML = ""; wrap._posts = [];
-  document.getElementById("outputHead").style.display = "flex";
-  document.getElementById("countBadge").textContent = posts.length + " inlägg";
-  document.getElementById("emptyState").style.display = "none";
+const PLAT_META = { instagram:{label:"Instagram",badge:"badge-ig",max:2200}, facebook:{label:"Facebook",badge:"badge-fb",max:1500} };
+
+function renderGenPosts(posts) {
+  const wrap = document.getElementById("genPosts");
+  wrap.innerHTML = ""; wrap._texts = [];
+  document.getElementById("genOutputHead").style.display = "flex";
+  document.getElementById("genCount").textContent = posts.length + " inlägg";
+  document.getElementById("genEmpty").style.display = "none";
 
   posts.forEach((post, i) => {
-    const m = PLAT_META[post.platform] || { label: post.platform, badge:"", max:2000 };
-    const full = state.hashtags && post.hashtags ? post.text + "\n\n" + post.hashtags : post.text;
-    const pct = Math.min(100, (full.length / m.max) * 100);
-    const barColor = pct > 90 ? "#f44336" : pct > 70 ? "#ff9800" : "#D42B2B";
-    wrap._posts[i] = full;
-
-    let docTag = "";
-    if (state.docName) {
-      let uploadTime = "";
-      try {
-        const d = new Date(state.docUploadedAt);
-        uploadTime = " · Uppladdad: " + d.toLocaleString("sv-SE", { dateStyle:"short", timeStyle:"short" });
-      } catch(_) {}
-      docTag = `<div><span class="doc-source-tag">📄 ${esc(state.docName)}${uploadTime}</span></div>`;
-    }
-
+    const m = PLAT_META[post.platform] || {label:post.platform,badge:"",max:2000};
+    const full = genState.hashtags && post.hashtags ? post.text + "\n\n" + post.hashtags : post.text;
+    const pct = Math.min(100,(full.length/m.max)*100);
+    const barCol = pct>90?"#f44336":pct>70?"#ff9800":"#22c55e";
+    wrap._texts[i] = full;
     const card = document.createElement("div");
-    card.className = "card";
-    card.style.animationDelay = (i * 0.08) + "s";
+    card.className = "post-card";
+    card.style.animationDelay = (i*.07)+"s";
     card.innerHTML = `
       <div class="card-head">
-        <div class="card-meta">
-          <div class="avatar">❤️</div>
-          <div>
-            <div class="org">Medmänniska Sverige</div>
-            <span class="badge ${m.badge}">${m.label}</span>
-          </div>
-        </div>
+        <div class="card-meta"><div class="card-avatar">❤️</div><div><div class="card-org">Medmänniska Sverige</div><span class="plat-badge ${m.badge}">${m.label}</span></div></div>
         <span class="num-badge">Inlägg ${i+1}</span>
       </div>
       <div class="card-body">
-        <div class="post-text">${esc(post.text)}</div>
-        ${state.hashtags && post.hashtags ? `<div class="post-tags">${esc(post.hashtags)}</div>` : ""}
-        ${docTag}
+        <div class="card-text">${esc(post.text)}</div>
+        ${genState.hashtags&&post.hashtags?'<div class="card-tags">'+esc(post.hashtags)+'</div>':""}
+        <div><span class="doc-tag">📄 ${esc(shared.docName)}</span></div>
       </div>
-      <div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${barCol}"></div></div>
       <div class="card-foot">
-        <span class="chars">${full.length} / ${m.max} tecken</span>
-        <button class="copy-btn" onclick="doCopy(this,${i})">📋 Kopiera</button>
+        <span class="chars">${full.length} / ${m.max}</span>
+        <button class="copy-btn" id="gc${i}" onclick="genCopy(${i})">📋 Kopiera</button>
       </div>
-      <div class="fallback-area" id="fb${i}" style="display:none">
+      <div class="fallback-area" id="gfb${i}" style="display:none">
         <div class="fallback-label">Markera och kopiera med Ctrl+C / ⌘C:</div>
         <textarea class="fallback-ta" readonly>${escAttr(full)}</textarea>
       </div>`;
@@ -989,21 +647,213 @@ function renderPosts(posts) {
   });
 }
 
-function doCopy(btn, idx) {
-  const text = document.getElementById("postsWrap")._posts[idx];
-  const ok = () => { btn.textContent = "✓ Kopierat!"; btn.classList.add("done"); setTimeout(()=>{ btn.textContent="📋 Kopiera"; btn.classList.remove("done"); }, 2000); };
-  const fallback = () => {
-    const fb = document.getElementById("fb"+idx);
-    fb.style.display = fb.style.display === "none" ? "block" : "none";
-    if (fb.style.display === "block") { const ta = fb.querySelector("textarea"); ta.focus(); ta.select(); try{ if(document.execCommand("copy")) ok(); }catch{} }
-  };
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(ok).catch(fallback);
-  } else { fallback(); }
+function genCopy(i) {
+  const text = document.getElementById("genPosts")._texts[i];
+  const btn = document.getElementById("gc"+i);
+  const ok = () => { btn.textContent="✓ Kopierat!"; btn.classList.add("done"); setTimeout(()=>{btn.textContent="📋 Kopiera";btn.classList.remove("done");},2000); };
+  const fb = () => { const el=document.getElementById("gfb"+i); el.style.display=el.style.display==="none"?"block":"none"; if(el.style.display==="block"){const ta=el.querySelector("textarea");ta.focus();ta.select();try{document.execCommand("copy");ok();}catch(_){}} };
+  if(navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(ok).catch(fb); else fb();
 }
 
-function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>"); }
-function escAttr(s){ return String(s).replace(/"/g,"&quot;"); }
+// ── Agent ──────────────────────────────────────────────────
+const AGENT_QUICK = {
+  new_post:"Jag vill skapa ett nytt inlägg. Vilket tema ska inlägget handla om?",
+  reply_comment:"Klistra in kommentaren du vill att jag svarar på.",
+  rewrite:"Klistra in det inlägg du vill att jag skriver om.",
+  content_plan:"Jag skapar en innehållsplan! Vill du ha en plan för denna vecka eller nästa vecka?"
+};
+
+function agentQuick(mode) {
+  document.querySelectorAll(".qa-btn").forEach(b=>b.classList.remove("active"));
+  event.currentTarget.classList.add("active");
+  hideWelcome(); addAgentMsg(AGENT_QUICK[mode]);
+}
+function agentSendQuick(text) { document.getElementById("agentInput").value=text; agentSend(); }
+function agentKey(e) { if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();agentSend();} }
+function autoResize(el) { el.style.height="auto"; el.style.height=Math.min(el.scrollHeight,110)+"px"; }
+function hideWelcome() { const w=document.getElementById("agentWelcome"); if(w)w.style.display="none"; }
+function now() { return new Date().toLocaleTimeString("sv-SE",{hour:"2-digit",minute:"2-digit"}); }
+
+function addUserBubble(text) {
+  hideWelcome();
+  const msgs=document.getElementById("agentMessages");
+  const d=document.createElement("div"); d.className="msg user";
+  d.innerHTML=`<div class="msg-av">NB</div><div class="msg-content"><div class="bubble">${esc(text)}</div><div class="msg-time">${now()}</div></div>`;
+  msgs.appendChild(d); scrollBot();
+  agentState.convHistory.push({role:"user",parts:[{text}]});
+}
+
+function addAgentMsg(text, cards, plan) {
+  const msgs=document.getElementById("agentMessages");
+  const d=document.createElement("div"); d.className="msg agent";
+  let extra="";
+  if(cards&&cards.length) extra=cards.map(c=>buildAgentCard(c)).join("");
+  else if(plan) extra=buildPlanCard(plan);
+  d.innerHTML=`<div class="msg-av">❤️</div><div class="msg-content" style="max-width:88%"><div class="bubble">${text.replace(/\n/g,"<br>")}</div>${extra}<div class="msg-time">${now()}</div></div>`;
+  msgs.appendChild(d); scrollBot();
+  agentState.convHistory.push({role:"model",parts:[{text:text+(cards?JSON.stringify(cards):"")+(plan?JSON.stringify(plan):"")}]});
+  if(cards&&cards.length) addAgentHistory(cards[0].text.slice(0,55)+"…",cards[0].platform);
+  if(plan) addAgentHistory("Innehållsplan","vecka");
+}
+
+function showThinking() {
+  const msgs=document.getElementById("agentMessages");
+  const d=document.createElement("div"); d.className="msg agent";
+  d.innerHTML=`<div class="msg-av">❤️</div><div class="thinking-dots"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(d); scrollBot(); return d;
+}
+
+function scrollBot() { const m=document.getElementById("agentMessages"); m.scrollTop=m.scrollHeight; }
+
+function addAgentHistory(title, platform) {
+  agentState.history.unshift({title,platform,time:now()});
+  if(agentState.history.length>10)agentState.history.pop();
+  const el=document.getElementById("agentHistory");
+  el.innerHTML=agentState.history.map(h=>`<div class="hist-item"><div class="hist-title">${esc(h.title)}</div><div class="hist-meta">${h.platform} · ${h.time}</div></div>`).join("");
+}
+
+window._agentCards = {};
+function buildAgentCard(post) {
+  const m=PLAT_META[post.platform]||{label:post.platform,badge:"",max:2000};
+  const full=post.hashtags?post.text+"\n\n"+post.hashtags:post.text;
+  const uid="ac_"+Math.random().toString(36).slice(2);
+  window._agentCards[uid]=full;
+  const pct=Math.min(100,(full.length/m.max)*100);
+  const barCol=pct>90?"#f44336":pct>70?"#ff9800":"#22c55e";
+  return `<div class="a-post-card">
+    <div class="a-post-head"><span class="plat-badge ${m.badge}">${m.label}</span><span style="font-size:11px;color:var(--muted)">${full.length}/${m.max}</span></div>
+    <div class="a-post-body">${esc(post.text)}${post.hashtags?'<div class="a-post-tags">'+esc(post.hashtags)+'</div>':""}</div>
+    <div style="height:3px;background:#f0eeeb;margin:0 13px"><div style="height:100%;width:${pct}%;background:${barCol};border-radius:2px"></div></div>
+    <div class="a-post-foot"><span style="font-size:11px;color:var(--muted)">${full.length}/${m.max}</span><button class="a-copy-btn" id="${uid}" onclick="agentCopy('${uid}')">📋 Kopiera</button></div>
+  </div>`;
+}
+
+function buildPlanCard(plan) {
+  const items=plan.map(item=>`<div class="plan-item"><div class="plan-day">${esc((item.day||"").slice(0,3))}</div><div class="plan-text"><strong>${esc(item.theme||"")}</strong><br><span style="color:var(--muted);font-size:11px">${esc(item.description||"")}</span><br><span class="plan-tag">${esc(item.platform||"")}</span></div></div>`).join("");
+  return `<div class="plan-card"><div class="plan-head">📅 Innehållsplan</div>${items}</div>`;
+}
+
+function agentCopy(uid) {
+  const text=window._agentCards[uid]||"";
+  const btn=document.getElementById(uid);
+  const ok=()=>{btn.textContent="✓ Kopierat!";btn.classList.add("done");setTimeout(()=>{btn.textContent="📋 Kopiera";btn.classList.remove("done");},2000);};
+  const fb=()=>{const ta=document.createElement("textarea");ta.value=text;ta.style.cssText="position:fixed;top:-9999px;opacity:0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");ok();}catch(_){}document.body.removeChild(ta);};
+  if(navigator.clipboard?.writeText)navigator.clipboard.writeText(text).then(ok).catch(fb);else fb();
+}
+
+async function agentSend() {
+  const input=document.getElementById("agentInput");
+  const text=input.value.trim();
+  if(!text)return;
+  if(!shared.apiKey){addAgentMsg("⚠️ Ingen API-nyckel. Tryck på 🔒 Admin och ange din Gemini-nyckel.");return;}
+  input.value="";input.style.height="auto";
+  addUserBubble(text);
+  const thinking=showThinking();
+  document.getElementById("agentSendBtn").disabled=true;
+
+  try {
+    const plats=agentState.platforms.map(p=>p==="instagram"?"Instagram":"Facebook").join(" och ");
+    const sysP=`Du är Social Media Agent för Medmänniska Sverige. Kommunicera ENBART på svenska.\n\nBRAND BIBLE:\n${shared.docText}\n\nAKTIVA PLATTFORMAR: ${plats}\n\nDU KAN:\n1. SKAPA INLÄGG — ett per aktiv plattform\n2. SVARA PÅ KOMMENTAR — lämpligt svar i rätt ton\n3. SKRIVA OM INLÄGG — förbättra befintlig text\n4. INNEHÅLLSPLAN — veckoplan med 5-7 inlägg\n5. SAMTALA — råd om kommunikation\n\nSVARA ALLTID med giltig JSON:\nInlägg: {"type":"posts","message":"kommentar","posts":[{"platform":"instagram","text":"...","hashtags":"#tag1 #tag2"},{"platform":"facebook","text":"...","hashtags":"#tag1"}]}\nPlan: {"type":"plan","message":"kommentar","plan":[{"day":"Måndag","theme":"...","platform":"Instagram","description":"..."}]}\nText: {"type":"text","message":"ditt svar"}\n\nHåll inlägg under 600 tecken. Svara ENBART med JSON.`;
+
+    const raw=await callGemini(sysP, text, agentState.convHistory.slice(-8));
+    const clean=raw.replace(/\`\`\`json\s*/gi,"").replace(/\`\`\`\s*/g,"").trim();
+    let parsed;
+    try{parsed=JSON.parse(clean);}
+    catch(_){
+      const s=clean.indexOf("{"),e=clean.lastIndexOf("}");
+      if(s!==-1&&e!==-1)try{parsed=JSON.parse(clean.slice(s,e+1));}catch(_){parsed={type:"text",message:clean};}
+      else parsed={type:"text",message:clean};
+    }
+    thinking.remove();
+    if(parsed.type==="posts")addAgentMsg(parsed.message||"Här är inläggen!",parsed.posts,null);
+    else if(parsed.type==="plan")addAgentMsg(parsed.message||"Här är innehållsplanen!",null,parsed.plan);
+    else addAgentMsg(parsed.message||parsed.text||"Klart!");
+  } catch(e) {
+    thinking.remove();
+    addAgentMsg("⚠️ Något gick fel: "+e.message+" — Försök igen.");
+  } finally {
+    document.getElementById("agentSendBtn").disabled=false;
+  }
+}
+
+// ── Shared Gemini call ─────────────────────────────────────
+async function callGemini(systemPrompt, userMessage, history) {
+  const models=["gemini-2.5-flash","gemini-2.0-flash"];
+  let data, lastErr;
+  for(let i=0;i<models.length;i++){
+    if(i>0)await new Promise(r=>setTimeout(r,2000));
+    const body={
+      system_instruction:{parts:[{text:systemPrompt}]},
+      contents:[...history,{role:"user",parts:[{text:userMessage}]}],
+      generationConfig:{temperature:0.8,maxOutputTokens:2000}
+    };
+    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${models[i]}:generateContent?key=${shared.apiKey}`,
+      {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    data=await res.json();
+    if(data.error){const m=data.error.message||"";if(m.toLowerCase().includes("demand")||res.status===429||res.status===503){lastErr=m;continue;}throw new Error(m);}
+    lastErr=null;break;
+  }
+  if(lastErr)throw new Error("Gemini överbelastad — försök igen om en stund.");
+  return data.candidates?.[0]?.content?.parts?.map(p=>p.text||"").join("")||"";
+}
+
+// ── Admin ──────────────────────────────────────────────────
+function openAdmin() {
+  document.getElementById("adminModal").style.display="flex";
+  document.getElementById("adminPanel").style.display="none";
+  document.getElementById("adminLock").style.display="block";
+  document.getElementById("adminErr").style.display="none";
+  document.getElementById("adminPw").value="";
+  if(shared.apiKey)document.getElementById("adminApiKey").value=shared.apiKey;
+}
+function closeAdmin(){document.getElementById("adminModal").style.display="none";}
+function verifyAdmin(){
+  if(document.getElementById("adminPw").value==="mm2026admin"){
+    document.getElementById("adminLock").style.display="none";
+    document.getElementById("adminPanel").style.display="block";
+    document.getElementById("adminErr").style.display="none";
+  } else {
+    document.getElementById("adminErr").style.display="block";
+  }
+}
+function saveApiKey(){
+  const k=document.getElementById("adminApiKey").value.trim();
+  if(!k)return;
+  shared.apiKey=k;
+  document.getElementById("genApiKey").value=k;
+  try{localStorage.setItem("ms_gemini_key",k);sessionStorage.setItem("ms_gemini_key",k);}catch(_){}
+  const el=document.getElementById("keySaved");el.style.display="block";
+  setTimeout(()=>{el.style.display="none";},2500);
+}
+
+async function handleDocUpload(e) {
+  const file=e.target.files[0];if(!file)return;
+  const ext=file.name.split(".").pop().toLowerCase();
+  try{
+    let text="";
+    if(ext==="docx"){
+      if(!window.mammoth)await new Promise((res,rej)=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js";s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+      const arr=await file.arrayBuffer();
+      text=(await window.mammoth.extractRawText({arrayBuffer:arr})).value;
+    } else if(ext==="pdf"){
+      text="[PDF]"; // handled inline by Gemini if needed
+    } else {
+      text=await file.text();
+    }
+    if(text&&text.length>20){
+      shared.docText=text;shared.docName=file.name;
+      const d=new Date().toLocaleDateString("sv-SE");
+      ["genDocName","agentDocName"].forEach(id=>document.getElementById(id).textContent=file.name);
+      ["genDocMeta","agentDocMeta"].forEach(id=>document.getElementById(id).textContent="Uppladdad · "+d);
+      const el=document.getElementById("docUploaded");
+      el.textContent="✓ "+file.name+" inläst!";el.style.display="block";
+    }
+  }catch(err){alert("Kunde inte läsa filen: "+err.message);}
+  e.target.value="";
+}
+
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function escAttr(s){return String(s||"").replace(/"/g,"&quot;");}
 </script>
 </body>
 </html>
