@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Medmänniska Sverige – Social Media Suite</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -18,72 +18,56 @@
 html,body{height:100%}
 body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);display:flex;flex-direction:column;overflow:hidden}
 
-/* ── HEADER ── */
+/* HEADER */
 header{background:var(--navy);padding:0 20px;height:58px;display:flex;align-items:center;gap:12px;flex-shrink:0;z-index:10}
 .logo-box{width:36px;height:36px;background:rgba(255,255,255,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .header-text h1{font-family:'Fraunces',serif;font-size:15px;color:#fff;line-height:1.1;font-weight:600}
 .header-text span{font-size:10px;font-weight:500;letter-spacing:.1em;color:rgba(255,255,255,.4);text-transform:uppercase}
-
-/* MODE SWITCHER */
 .mode-switch{margin-left:auto;display:flex;align-items:center;background:rgba(255,255,255,.08);border-radius:10px;padding:3px;gap:2px}
 .mode-btn{padding:6px 14px;border-radius:8px;border:none;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;color:rgba(255,255,255,.5);background:transparent}
 .mode-btn.active{background:var(--red);color:#fff}
 .mode-btn:not(.active):hover{color:#fff;background:rgba(255,255,255,.1)}
-
 .header-actions{display:flex;gap:8px;margin-left:12px}
 .hdr-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.5);border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap}
 .hdr-btn:hover{background:rgba(255,255,255,.15);color:rgba(255,255,255,.85)}
 .version-tag{font-size:10px;color:rgba(255,255,255,.25);margin-left:4px}
 
-/* ── PANELS ── */
+/* PANELS */
 .panel{display:none;flex:1;overflow:hidden}
 .panel.active{display:flex;flex-direction:column}
 
-/* ════════════════════════════════════════
-   GENERATOR PANEL
-════════════════════════════════════════ */
+/* GENERATOR */
 .gen-layout{display:grid;grid-template-columns:340px 1fr;flex:1;overflow:hidden;height:100%}
 .gen-sidebar{background:var(--white);border-right:1px solid var(--grey);padding:24px 20px;overflow-y:auto}
 .gen-output{padding:28px 24px;overflow-y:auto;background:var(--sand)}
-
 .sec-label{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;margin-top:22px}
 .sec-label:first-child{margin-top:0}
-
 .values-strip{display:flex;flex-wrap:wrap;gap:5px;padding:10px 14px;background:var(--red-pale);border-radius:10px;border-left:3px solid var(--red);margin-bottom:4px}
 .values-strip span{font-size:10px;color:var(--red);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
 .values-strip .dot{color:#ddd}
-
 .doc-status-bar{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--sand);border-radius:10px;border:1px solid var(--grey)}
 .doc-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0}
 .doc-info .doc-name{font-size:12px;font-weight:600;color:var(--navy-mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
 .doc-info .doc-meta{font-size:10px;color:var(--muted);margin-top:1px}
-
 .pills{display:flex;gap:6px;flex-wrap:wrap}
 .pill{padding:7px 13px;border-radius:50px;border:1.5px solid var(--grey);font-size:12px;font-weight:500;cursor:pointer;background:transparent;color:var(--muted);transition:all .2s;font-family:inherit}
 .pill:hover{border-color:var(--red);color:var(--red)}
 .pill.on{background:var(--red);border-color:var(--red);color:#fff}
-
 .plat-row{display:flex;gap:8px}
 .plat-btn{flex:1;padding:9px 10px;border-radius:9px;border:1.5px solid var(--grey);font-size:12px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);transition:all .2s;font-family:inherit;text-align:center}
 .plat-btn.on{background:var(--navy-mid);border-color:var(--navy-mid);color:#fff}
-
-select,textarea,input[type=text],input[type=password]{font-family:inherit}
 .gen-select{width:100%;padding:9px 13px;border-radius:9px;border:1.5px solid var(--grey);font-size:13px;color:var(--text);background:var(--white);cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a7a7a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
 .gen-select:focus{outline:none;border-color:var(--red)}
-.gen-textarea{width:100%;padding:10px 13px;border-radius:9px;border:1.5px solid var(--grey);font-size:13px;color:var(--text);resize:vertical;min-height:72px;outline:none;transition:border-color .2s;background:var(--white)}
+.gen-textarea{width:100%;padding:10px 13px;border-radius:9px;border:1.5px solid var(--grey);font-size:13px;color:var(--text);resize:vertical;min-height:72px;outline:none;transition:border-color .2s;background:var(--white);font-family:inherit}
 .gen-textarea:focus{border-color:var(--red)}
-
 .toggle-row{display:flex;align-items:center;justify-content:space-between}
 .toggle{width:42px;height:23px;background:#ddd;border-radius:50px;position:relative;cursor:pointer;transition:background .25s;border:none;flex-shrink:0}
 .toggle::after{content:'';position:absolute;top:3px;left:3px;width:17px;height:17px;background:#fff;border-radius:50%;transition:transform .25s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
 .toggle.on{background:var(--red)}
 .toggle.on::after{transform:translateX(19px)}
-
 .gen-btn{width:100%;padding:13px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;margin-top:20px;transition:all .2s}
 .gen-btn:hover:not(:disabled){background:var(--red-dark);transform:translateY(-1px);box-shadow:0 6px 20px rgba(212,43,43,.3)}
 .gen-btn:disabled{background:#ccc;cursor:not-allowed;transform:none;box-shadow:none}
-
-/* Output */
 .output-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .output-title{font-family:'Fraunces',serif;font-size:22px;color:var(--navy)}
 .count-badge{font-size:12px;color:var(--muted);background:var(--grey);padding:4px 12px;border-radius:50px}
@@ -116,9 +100,7 @@ select,textarea,input[type=text],input[type=password]{font-family:inherit}
 .gen-empty{text-align:center;padding:48px 0;opacity:.4}
 .gen-err{background:#fff5f5;border:1px solid #ffcdd2;border-radius:10px;padding:12px 16px;color:#c62828;font-size:13px;margin-top:12px}
 
-/* ════════════════════════════════════════
-   AGENT PANEL
-════════════════════════════════════════ */
+/* AGENT */
 .agent-layout{display:flex;flex:1;overflow:hidden}
 .agent-sidebar{width:260px;background:var(--white);border-right:1px solid var(--grey);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
 .agent-sidebar-top{padding:16px 16px 12px;border-bottom:1px solid var(--grey)}
@@ -138,7 +120,6 @@ select,textarea,input[type=text],input[type=password]{font-family:inherit}
 .agent-plat-row{display:flex;gap:5px;margin-top:10px}
 .a-plat{flex:1;padding:6px 7px;border-radius:7px;border:1.5px solid var(--grey);font-size:11px;font-weight:600;cursor:pointer;text-align:center;font-family:inherit;transition:all .2s;color:var(--muted)}
 .a-plat.on{border-color:var(--navy-mid);background:var(--navy-mid);color:#fff}
-
 .chat-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .messages{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
 .welcome{text-align:center;padding:28px 20px;max-width:460px;margin:auto}
@@ -148,7 +129,6 @@ select,textarea,input[type=text],input[type=password]{font-family:inherit}
 .welcome-chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:16px}
 .wchip{padding:7px 13px;border-radius:50px;border:1.5px solid var(--grey);background:var(--white);font-size:12px;font-weight:500;cursor:pointer;color:var(--navy-mid);transition:all .2s;font-family:inherit}
 .wchip:hover{border-color:var(--red);background:var(--red-pale);color:var(--red)}
-
 .msg{display:flex;gap:9px;max-width:100%;animation:msgIn .3s ease both}
 @keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .msg.user{flex-direction:row-reverse}
@@ -161,8 +141,6 @@ select,textarea,input[type=text],input[type=password]{font-family:inherit}
 .msg.agent .bubble{background:var(--white);color:var(--text);border-bottom-left-radius:4px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
 .msg.user .bubble{background:var(--navy);color:#fff;border-bottom-right-radius:4px}
 .msg-time{font-size:10px;color:var(--muted);margin-top:3px;padding:0 3px}
-
-/* Agent post card */
 .a-post-card{background:var(--white);border-radius:12px;border:1.5px solid var(--grey);overflow:hidden;margin-top:5px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
 .a-post-head{padding:9px 13px;border-bottom:1px solid var(--grey);display:flex;align-items:center;justify-content:space-between}
 .a-post-body{padding:13px;font-size:13px;line-height:1.75;color:var(--text);white-space:pre-wrap}
@@ -171,8 +149,6 @@ select,textarea,input[type=text],input[type=password]{font-family:inherit}
 .a-copy-btn{padding:5px 11px;border:1.5px solid var(--navy-mid);border-radius:6px;font-size:11px;font-weight:600;font-family:inherit;color:var(--navy-mid);background:transparent;cursor:pointer;transition:all .2s}
 .a-copy-btn:hover{background:var(--navy-mid);color:#fff}
 .a-copy-btn.done{background:#16a34a;border-color:#16a34a;color:#fff}
-
-/* Plan card */
 .plan-card{background:var(--white);border-radius:12px;border:1.5px solid var(--grey);overflow:hidden;margin-top:5px}
 .plan-head{padding:9px 13px;border-bottom:1px solid var(--grey);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--navy-mid);background:var(--sand)}
 .plan-item{padding:9px 13px;border-bottom:1px solid #f5f3ef;display:flex;gap:9px;align-items:flex-start}
@@ -180,13 +156,11 @@ select,textarea,input[type=text],input[type=password]{font-family:inherit}
 .plan-day{font-size:11px;font-weight:700;color:var(--red);width:26px;flex-shrink:0;margin-top:1px}
 .plan-text{font-size:12px;color:var(--text);line-height:1.5}
 .plan-tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:50px;background:var(--red-pale);color:var(--red);margin-top:3px}
-
 .thinking-dots{display:flex;gap:4px;padding:11px 15px;background:var(--white);border-radius:15px;border-bottom-left-radius:4px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
 .thinking-dots span{width:6px;height:6px;border-radius:50%;background:#ccc;animation:dot .9s infinite}
 .thinking-dots span:nth-child(2){animation-delay:.15s}
 .thinking-dots span:nth-child(3){animation-delay:.3s}
 @keyframes dot{0%,80%,100%{transform:scale(.8);background:#ddd}40%{transform:scale(1.1);background:var(--red)}}
-
 .input-bar{border-top:1px solid var(--grey);background:var(--white);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
 .quick-chips{display:flex;gap:5px;overflow-x:auto;padding-bottom:2px}
 .quick-chips::-webkit-scrollbar{display:none}
@@ -200,7 +174,7 @@ select,textarea,input[type=text],input[type=password]{font-family:inherit}
 .send-btn:disabled{background:#ccc;cursor:not-allowed}
 .send-btn svg{width:17px;height:17px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
-/* ── ADMIN MODAL ── */
+/* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
 .modal{background:var(--white);border-radius:18px;padding:26px;width:100%;max-width:380px;box-shadow:var(--shadow-deep)}
 .modal h3{font-family:'Fraunces',serif;font-size:19px;color:var(--navy);margin-bottom:5px}
@@ -219,19 +193,20 @@ select,textarea,input[type=text],input[type=password]{font-family:inherit}
 .msg-err{font-size:12px;color:#c62828;margin-top:6px;display:none}
 .upload-zone{border:2px dashed #ddd;border-radius:9px;padding:13px;text-align:center;cursor:pointer;position:relative;background:var(--sand)}
 .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-thumb{background:#ddd;border-radius:3px}
+
 @media(max-width:680px){
   .gen-layout{grid-template-columns:1fr!important;grid-template-rows:auto 1fr;overflow-y:auto}
   .gen-sidebar{display:block;border-right:none;border-bottom:1px solid var(--grey);padding:16px;overflow:visible}
   .gen-output{padding:16px;overflow:visible}
   .agent-sidebar{display:none}
-  .gen-layout,.agent-layout{height:auto}
   header{height:auto;padding:10px 14px;flex-wrap:wrap;gap:8px}
   .mode-switch{order:3;width:100%;justify-content:center}
   .header-actions{margin-left:auto}
   .header-text h1{font-size:13px}
-  .panel.active{flex-direction:column;overflow-y:auto}
+  .panel.active{overflow-y:auto}
   .agent-layout{height:100%}
   .chat-wrap{min-height:0;flex:1}
 }
@@ -241,7 +216,7 @@ select,textarea,input[type=text],input[type=password]{font-family:inherit}
 
 <header>
   <div class="logo-box">
-    <svg viewBox="0 0 100 100" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 100 100" width="24" height="24">
       <circle cx="35" cy="18" r="12" fill="#fff" opacity=".9"/>
       <circle cx="65" cy="18" r="12" fill="#fff" opacity=".9"/>
       <path d="M50 90 C20 70 10 50 30 35 C40 28 50 40 50 40 C50 40 60 28 70 35 C90 50 80 70 50 90Z" fill="#fff" opacity=".9"/>
@@ -262,15 +237,14 @@ select,textarea,input[type=text],input[type=password]{font-family:inherit}
   </div>
 </header>
 
-<!-- ══════════ GENERATOR PANEL ══════════ -->
+<!-- GENERATOR PANEL -->
 <div class="panel active" id="panelGenerator">
-  <div class="gen-layout" style="flex:1">
+  <div class="gen-layout">
     <aside class="gen-sidebar">
       <div class="values-strip">
         <span>Värme</span><span class="dot">·</span><span>Värdighet</span><span class="dot">·</span>
         <span>Gemenskap</span><span class="dot">·</span><span>Medmänsklighet</span><span class="dot">·</span><span>Kärlek</span>
       </div>
-
       <div class="sec-label">Dokument</div>
       <div class="doc-status-bar">
         <div class="doc-dot"></div>
@@ -279,14 +253,12 @@ select,textarea,input[type=text],input[type=password]{font-family:inherit}
           <div class="doc-meta" id="genDocMeta">Inbyggt · 2026-06-07</div>
         </div>
       </div>
-
       <div class="sec-label">Tema</div>
       <div class="pills" id="genTheme">
         <button class="pill on" data-v="food">🍲 Matutdelning</button>
         <button class="pill" data-v="volunteer">🙋 Volontärer</button>
         <button class="pill" data-v="general">❤️ Om oss</button>
       </div>
-
       <div class="sec-label">Målgrupp</div>
       <div class="pills" id="genAudience">
         <button class="pill on" data-v="volunteers">Volontärer</button>
@@ -294,57 +266,72 @@ select,textarea,input[type=text],input[type=password]{font-family:inherit}
         <button class="pill on" data-v="donors">Donationer</button>
         <button class="pill on" data-v="public">Allmänheten</button>
       </div>
-
       <div class="sec-label">Plattform</div>
       <div class="plat-row">
         <button class="plat-btn on" data-gp="instagram" onclick="toggleGenPlat(this)">📸 Instagram</button>
         <button class="plat-btn on" data-gp="facebook" onclick="toggleGenPlat(this)">👥 Facebook</button>
       </div>
-
       <div class="sec-label">Ton</div>
       <select class="gen-select" id="genTone">
-        <option value="warm">Varm & hjärtlig</option>
-        <option value="urgent">Angelägen & engagerande</option>
-        <option value="grateful">Tacksam & inspirerande</option>
-        <option value="informative">Informativ & tydlig</option>
+        <option value="warm">Varm &amp; hjärtlig</option>
+        <option value="urgent">Angelägen &amp; engagerande</option>
+        <option value="grateful">Tacksam &amp; inspirerande</option>
+        <option value="informative">Informativ &amp; tydlig</option>
       </select>
-
+      <div class="sec-label">Emojis</div>
+      <select class="gen-select" id="genEmojiLevel">
+        <option value="none">Inga emojis</option>
+        <option value="low">Få (1-2 st)</option>
+        <option value="medium" selected>Lagom (3-5 st)</option>
+        <option value="high">Flera (6+ st)</option>
+      </select>
       <div class="sec-label">Eget tillägg (valfritt)</div>
       <textarea class="gen-textarea" id="genCustom" placeholder="T.ex. nästa utdelning söndag 15 juni kl 18:00 vid Carl Johans kyrka…"></textarea>
-
       <div class="sec-label">Hashtags</div>
       <div class="toggle-row">
         <span style="font-size:13px">Inkludera hashtags</span>
         <button class="toggle on" id="genHashToggle" onclick="genState.hashtags=!genState.hashtags;this.classList.toggle('on',genState.hashtags)"></button>
       </div>
-
       <input type="hidden" id="genApiKey">
       <button class="gen-btn" id="genRunBtn" onclick="runGenerator()">✨ Generera inlägg</button>
     </aside>
-
     <main class="gen-output">
       <div id="genOutputHead" class="output-head" style="display:none">
         <div class="output-title">Dina inlägg</div>
-        <span class="count-badge" id="genCount"></span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="count-badge" id="genCount"></span>
+          <button id="copyAllBtn" onclick="copyAllPosts()" style="padding:5px 12px;border-radius:8px;border:1.5px solid var(--navy-mid);background:transparent;color:var(--navy-mid);font-size:11px;font-weight:600;font-family:inherit;cursor:pointer">Kopiera alla</button>
+        </div>
       </div>
       <div class="posts-list" id="genPosts"></div>
       <div class="gen-err" id="genErr" style="display:none"></div>
+      <div id="historyPanel" style="margin-top:24px;display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-family:'Fraunces',serif;font-size:18px;color:var(--navy)">Sparade inlägg</div>
+          <button onclick="clearHistory()" style="font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit;text-decoration:underline">Rensa</button>
+        </div>
+        <div id="historyItems"></div>
+      </div>
       <div class="gen-empty" id="genEmpty">
         <div style="font-size:44px;margin-bottom:12px">💬</div>
         <div style="font-size:14px;color:var(--muted)">Välj inställningar och tryck<br><strong>Generera inlägg</strong></div>
+        <button onclick="showHistory()" style="margin-top:14px;padding:7px 14px;border-radius:8px;border:1.5px solid var(--grey);background:var(--white);font-size:12px;font-weight:600;font-family:inherit;color:var(--navy-mid);cursor:pointer">Visa tidigare inlägg</button>
       </div>
     </main>
   </div>
 </div>
 
-<!-- ══════════ AGENT PANEL ══════════ -->
+<!-- AGENT PANEL -->
 <div class="panel" id="panelAgent">
-  <div class="agent-layout" style="flex:1">
+  <div class="agent-layout">
     <aside class="agent-sidebar">
       <div class="agent-sidebar-top">
-        <div class="sec-label" style="margin-top:0">Snabbval</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div class="sec-label" style="margin-top:0;margin-bottom:0">Snabbval</div>
+          <button onclick="resetAgent()" style="font-size:11px;font-weight:600;font-family:inherit;background:var(--sand);border:1.5px solid var(--grey);color:var(--muted);padding:4px 10px;border-radius:7px;cursor:pointer">↺ Ny chatt</button>
+        </div>
         <div class="qa-list">
-          <button class="qa-btn" onclick="agentQuick('new_post')"><span class="qa-icon">✍️</span><div><div class="qa-label">Nytt inlägg</div><div class="qa-sub">IG & Facebook</div></div></button>
+          <button class="qa-btn" onclick="agentQuick('new_post')"><span class="qa-icon">✍️</span><div><div class="qa-label">Nytt inlägg</div><div class="qa-sub">IG &amp; Facebook</div></div></button>
           <button class="qa-btn" onclick="agentQuick('reply_comment')"><span class="qa-icon">💬</span><div><div class="qa-label">Svara på kommentar</div><div class="qa-sub">Klistra in kommentaren</div></div></button>
           <button class="qa-btn" onclick="agentQuick('rewrite')"><span class="qa-icon">✏️</span><div><div class="qa-label">Skriv om inlägg</div><div class="qa-sub">Förbättra befintlig text</div></div></button>
           <button class="qa-btn" onclick="agentQuick('content_plan')"><span class="qa-icon">📅</span><div><div class="qa-label">Innehållsplan</div><div class="qa-sub">Veckovis schema</div></div></button>
@@ -370,28 +357,26 @@ select,textarea,input[type=text],input[type=password]{font-family:inherit}
         <div id="agentHistory"><div class="no-hist">Ingen historik ännu</div></div>
       </div>
     </aside>
-
     <div class="chat-wrap">
       <div class="messages" id="agentMessages">
         <div class="welcome" id="agentWelcome">
           <div class="welcome-icon">❤️</div>
           <h2>Hej! Jag är er Social Media Agent</h2>
-          <p>Jag kan skapa inlägg, svara på kommentarer, skriva om texter och planera ert innehåll — alltid baserat på Medmänniska Sveriges värderingar.</p>
-          <div class="welcome-chips">
-            <button class="wchip" onclick="agentQuick('new_post')">✍️ Skapa ett inlägg</button>
-            <button class="wchip" onclick="agentQuick('reply_comment')">💬 Svara på kommentar</button>
-            <button class="wchip" onclick="agentQuick('rewrite')">✏️ Skriv om ett inlägg</button>
-            <button class="wchip" onclick="agentQuick('content_plan')">📅 Innehållsplan</button>
-          </div>
+          <p>Jag kan skapa inlägg, svara på kommentarer, skriva om texter och planera ert innehåll.</p>
+          <div class="welcome-chips" id="welcomeChips"></div>
         </div>
       </div>
       <div class="input-bar">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+          <span style="font-size:11px;color:var(--muted)" id="agentModeLabel"></span>
+          <button onclick="resetAgent()" id="newChatBtn" style="display:none;font-size:11px;font-weight:600;font-family:inherit;background:transparent;border:1.5px solid var(--grey);color:var(--muted);padding:3px 10px;border-radius:7px;cursor:pointer">↺ Ny chatt</button>
+        </div>
         <div class="quick-chips">
           <button class="qchip" onclick="agentSendQuick('Skapa ett Instagram-inlägg om vår matutdelning')">🍲 Matutdelning</button>
           <button class="qchip" onclick="agentSendQuick('Rekrytera volontärer till oss')">🙋 Volontärer</button>
           <button class="qchip" onclick="agentSendQuick('Skriv ett inspirerande inlägg om vår organisation')">❤️ Om oss</button>
           <button class="qchip" onclick="agentSendQuick('Ge mig en innehållsplan för nästa vecka')">📅 Innehållsplan</button>
-          <button class="qchip" onclick="agentSendQuick('Hur svarar jag på en negativ kommentar?')">💬 Kommentarshjälp</button>
+          <button class="qchip" onclick="showCommentTemplates()">💬 Kommentarsmallar</button>
         </div>
         <div class="input-row">
           <textarea class="chat-input" id="agentInput" rows="1" placeholder="Skriv ett meddelande…" onkeydown="agentKey(event)" oninput="autoResize(this)"></textarea>
@@ -404,7 +389,7 @@ select,textarea,input[type=text],input[type=password]{font-family:inherit}
   </div>
 </div>
 
-<!-- ══════════ ADMIN MODAL ══════════ -->
+<!-- ADMIN MODAL -->
 <div class="modal-overlay" id="adminModal" style="display:none" onclick="if(event.target===this)closeAdmin()">
   <div class="modal">
     <h3>🔒 Adminpanel</h3>
@@ -445,8 +430,9 @@ select,textarea,input[type=text],input[type=password]{font-family:inherit}
 </div>
 
 <script>
+
 // ── Constants ──────────────────────────────────────────────
-const APP_VERSION = "3.1.0";
+const APP_VERSION = "4.0.0";
 const APP_DATE    = "2026-06-07";
 
 const BRAND_BIBLE = `MEDMÄNNISKA SVERIGE - FULL AI BRAND BIBLE | VERSION 1.0 | 2026-06-07
@@ -478,6 +464,16 @@ FACEBOOK: Längre berättelser, volontärrekrytering, event, max 1500 tecken
 AI-REGLER: Sätt alltid människan först. Skriv varmt och mänskligt. Visa hopp. Undvik politik och skuld.`;
 
 // ── Shared state ───────────────────────────────────────────
+
+const postHistory = {
+  items:[],
+  load:function(){try{this.items=JSON.parse(localStorage.getItem("ms_post_history")||"[]");}catch(_){this.items=[];}},
+  save:function(){try{localStorage.setItem("ms_post_history",JSON.stringify(this.items.slice(0,30)));}catch(_){}},
+  add:function(posts,src){this.items.unshift({id:Date.now(),ts:new Date().toLocaleString("sv-SE"),source:src||"gen",posts:posts});this.save();},
+  clear:function(){this.items=[];this.save();}
+};
+postHistory.load();
+
 const shared = {
   apiKey: "",
   docText: BRAND_BIBLE,
@@ -490,18 +486,21 @@ const genState = {
   theme: "food",
   audiences: ["volunteers","help","donors","public"],
   platforms: ["instagram","facebook"],
-  hashtags: true
+  hashtags: true,
+  emojiLevel: "medium"
 };
 
 // Agent state
 const agentState = {
   platforms: ["instagram","facebook"],
   history: [],
-  convHistory: []
+  convHistory: [],
+  lastPrompt: null
 };
 
 // ── Init ───────────────────────────────────────────────────
 document.getElementById("versionTag").textContent = "v" + APP_VERSION;
+try { document.getElementById("genEmojiLevel").addEventListener("change", function() { genState.emojiLevel = this.value; }); } catch(_) {}
 try {
   const k = localStorage.getItem("ms_gemini_key") || sessionStorage.getItem("ms_gemini_key");
   if (k) { shared.apiKey = k; document.getElementById("genApiKey").value = k; }
@@ -575,11 +574,14 @@ async function runGenerator() {
   const hash = genState.hashtags ? "Inkludera 5–7 hashtags." : "Inga hashtags.";
 
   const systemP = `Du är kommunikationsansvarig för Medmänniska Sverige.\n\nBRAND BIBLE:\n${shared.docText}\n\nSkriv alltid på svenska. Tala varmt och mänskligt.`;
+  const EMOJI_MAP={none:"Inga emojis.",low:"Max 1-2 emojis.",medium:"3-5 emojis.",high:"6 eller fler emojis."};
+  const emojiInstr=EMOJI_MAP[genState.emojiLevel]||EMOJI_MAP.medium;
   const userP = `Skapa inlägg för Medmänniska Sverige.
 Tema: ${THEME_MAP[genState.theme]}
 Målgrupp: ${aud}
 Plattformar: ${plats}
 Ton: ${tone}
+Emojis: ${emojiInstr}
 ${hash}
 ${custom ? 'Inkludera naturligt: "' + custom + '"' : ""}
 
@@ -647,6 +649,64 @@ function renderGenPosts(posts) {
   });
 }
 
+
+function copyAllPosts(){
+  var wrap=document.getElementById("genPosts");
+  var texts=wrap._texts||[];
+  var parts=[];
+  for(var i=0;i<texts.length;i++){
+    var card=wrap.children[i];
+    var badge=card?card.querySelector(".plat-badge"):null;
+    var plat=badge?badge.textContent:("Inlagg "+(i+1));
+    parts.push(plat.toUpperCase()+":\n"+texts[i]);
+  }
+  var all=parts.join("\n\n------------------------------\n\n");
+  var btn=document.getElementById("copyAllBtn");
+  var ok=function(){if(btn)btn.textContent="Kopierat!";setTimeout(function(){if(btn)btn.textContent="Kopiera alla";},2000);};
+  var fb=function(){var ta=document.createElement("textarea");ta.value=all;ta.style.cssText="position:fixed;top:-9999px;opacity:0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");ok();}catch(_){}document.body.removeChild(ta);};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(all).then(ok).catch(fb);else fb();
+}
+function showHistory(){
+  if(!postHistory.items.length)return;
+  document.getElementById("genEmpty").style.display="none";
+  renderHistoryPanel();
+  document.getElementById("historyPanel").style.display="block";
+}
+function clearHistory(){
+  postHistory.clear();
+  document.getElementById("historyPanel").style.display="none";
+  document.getElementById("genEmpty").style.display="block";
+}
+function renderHistoryPanel(){
+  var wrap=document.getElementById("historyItems");
+  wrap.innerHTML="";
+  postHistory.items.forEach(function(item){
+    var card=document.createElement("div");
+    card.style.cssText="background:#fff;border-radius:12px;border:1.5px solid var(--grey);margin-bottom:10px;overflow:hidden";
+    var head=document.createElement("div");
+    head.style.cssText="padding:9px 13px;border-bottom:1px solid var(--grey);display:flex;justify-content:space-between;background:var(--sand)";
+    head.innerHTML='<span style="font-size:11px;font-weight:600;color:var(--navy-mid)">'+esc(item.source)+'</span><span style="font-size:10px;color:var(--muted)">'+esc(item.ts)+'</span>';
+    card.appendChild(head);
+    item.posts.forEach(function(post){
+      var m=PLAT_META[post.platform]||{label:post.platform,badge:"",max:2000};
+      var full=post.hashtags?post.text+"\n\n"+post.hashtags:post.text;
+      var row=document.createElement("div");
+      row.style.cssText="padding:11px 13px;border-bottom:1px solid #f5f3ef";
+      row.innerHTML='<span class="plat-badge '+m.badge+'">'+m.label+'</span><div style="font-size:12px;line-height:1.7;white-space:pre-wrap;color:var(--text);margin-top:5px">'+esc(post.text)+'</div>';
+      var btn=document.createElement("button");
+      btn.textContent="Kopiera";
+      btn.style.cssText="margin-top:7px;padding:5px 11px;border:1.5px solid var(--navy-mid);border-radius:6px;font-size:11px;font-weight:600;font-family:inherit;color:var(--navy-mid);background:transparent;cursor:pointer";
+      (function(f,b){btn.addEventListener("click",function(){
+        var ok2=function(){b.textContent="Kopierat!";setTimeout(function(){b.textContent="Kopiera";},2000);};
+        var fb2=function(){var ta=document.createElement("textarea");ta.value=f;ta.style.cssText="position:fixed;top:-9999px;opacity:0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");ok2();}catch(_){}document.body.removeChild(ta);};
+        if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(f).then(ok2).catch(fb2);else fb2();
+      });})(full,btn);
+      row.appendChild(btn);
+      card.appendChild(row);
+    });
+    wrap.appendChild(card);
+  });
+}
 function genCopy(i) {
   const text = document.getElementById("genPosts")._texts[i];
   const btn = document.getElementById("gc"+i);
@@ -656,19 +716,208 @@ function genCopy(i) {
 }
 
 // ── Agent ──────────────────────────────────────────────────
-const AGENT_QUICK = {
-  new_post:"Jag vill skapa ett nytt inlägg. Vilket tema ska inlägget handla om?",
-  reply_comment:"Klistra in kommentaren du vill att jag svarar på.",
-  rewrite:"Klistra in det inlägg du vill att jag skriver om.",
-  content_plan:"Jag skapar en innehållsplan! Vill du ha en plan för denna vecka eller nästa vecka?"
+// ── Guided flow state ─────────────────────────────────────
+const flow = {
+  step: null,     // null | 'choose_theme' | 'add_detail' | 'free'
+  mode: null,     // 'new_post' | 'reply_comment' | 'rewrite' | 'content_plan'
+  theme: null,    // chosen theme
+  detail: null    // user's extra context
 };
+
+const THEMES = [
+  { id:"food",    label:"🍲 Matutdelning" },
+  { id:"volunteer", label:"🙋 Volontärer" },
+  { id:"general", label:"❤️ Om oss" },
+  { id:"event",   label:"📅 Event" },
+  { id:"story",   label:"💛 Berättelse" }
+];
 
 function agentQuick(mode) {
   document.querySelectorAll(".qa-btn").forEach(b=>b.classList.remove("active"));
-  event.currentTarget.classList.add("active");
-  hideWelcome(); addAgentMsg(AGENT_QUICK[mode]);
+  if(event && event.currentTarget) event.currentTarget.classList.add("active");
+  hideWelcome();
+  flow.mode = mode;
+  flow.step = null;
+  flow.theme = null;
+  flow.detail = null;
+  showNewChatBtn(true);
+
+  if(mode === "new_post") {
+    flow.step = "choose_theme";
+    addAgentMsgWithButtons(
+      "Vilket tema ska inlägget handla om?",
+      THEMES.map(t => ({ label: t.label, action: () => chooseTheme(t.id, t.label) }))
+    );
+  } else if(mode === "reply_comment") {
+    flow.step = "free";
+    addAgentMsg("Klistra in kommentaren du vill att jag svarar på, så skriver jag ett svar i Medmänniska Sveriges ton.");
+  } else if(mode === "rewrite") {
+    flow.step = "free";
+    addAgentMsg("Klistra in det inlägg du vill att jag förbättrar.");
+  } else if(mode === "content_plan") {
+    flow.step = "free";
+    addAgentMsgWithButtons(
+      "Innehållsplan för vilken period?",
+      [
+        { label:"📅 Denna vecka", action: () => agentSendQuick("Ge mig en innehållsplan för denna vecka") },
+        { label:"📅 Nästa vecka", action: () => agentSendQuick("Ge mig en innehållsplan för nästa vecka") },
+        { label:"📅 Kommande 2 veckor", action: () => agentSendQuick("Ge mig en innehållsplan för kommande 2 veckor") }
+      ]
+    );
+  }
 }
+
+function chooseTheme(themeId, themeLabel) {
+  flow.theme = themeId;
+  flow.step = "add_detail";
+  addUserBubble(themeLabel);
+  addAgentMsgWithButtons(
+    'Bra! Vill du lägga till egen styrning eller extra info till inlägget? T.ex. det var mycket folk, vårt första inlägg, specifikt datum.',
+    [
+      { label:"✍️ Ja, jag lägger till info", action: () => askForDetail() },
+      { label:"⚡ Nej, generera direkt", action: () => generateWithTheme(null) }
+    ]
+  );
+}
+
+function askForDetail() {
+  flow.step = "add_detail";
+  document.getElementById("agentModeLabel").textContent = "Skriv din styrning nedan:";
+  addAgentMsg("Beskriv vad du vill inkludera eller betona i inlägget:");
+  focusInput();
+}
+
+function generateWithTheme(detail) {
+  const themeMap = { food:"matutdelning och matstöd", volunteer:"rekrytering av volontärer", general:"organisationen Medmänniska Sverige", event:"ett event eller aktivitet", story:"en personlig berättelse eller upplevelse" };
+  const themeName = themeMap[flow.theme] || flow.theme;
+  let prompt = `Skapa ett inlägg om ${themeName} för Medmänniska Sverige.`;
+  if(detail) prompt += ` Extra info att inkludera: ${detail}`;
+  flow.step = "free";
+  agentSendDirect(prompt);
+}
+
+function addAgentMsgWithButtons(text, buttons) {
+  const msgs = document.getElementById("agentMessages");
+  const d = document.createElement("div");
+  d.className = "msg agent";
+
+  // Avatar
+  const av = document.createElement("div");
+  av.className = "msg-av";
+  av.textContent = "❤️";
+
+  // Content wrapper
+  const content = document.createElement("div");
+  content.className = "msg-content";
+  content.style.maxWidth = "88%";
+
+  // Bubble
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = text;
+
+  // Time
+  const time = document.createElement("div");
+  time.className = "msg-time";
+  time.textContent = now();
+
+  // Buttons wrapper
+  const btnWrap = document.createElement("div");
+  btnWrap.className = "flow-btns";
+
+  buttons.forEach(function(b) {
+    const btn = document.createElement("button");
+    btn.className = "flow-btn";
+    btn.textContent = b.label;
+    btn.style.cssText = "display:block;width:100%;text-align:left;padding:8px 12px;margin-top:6px;border-radius:9px;border:1.5px solid #ece8e1;background:#fff;font-size:13px;font-family:inherit;cursor:pointer;color:#2E3F5C;font-weight:500;transition:all .2s";
+    btn.addEventListener("mouseenter", function() {
+      this.style.borderColor = "#D42B2B";
+      this.style.color = "#D42B2B";
+      this.style.background = "#fdf3f3";
+    });
+    btn.addEventListener("mouseleave", function() {
+      if(!this.disabled) {
+        this.style.borderColor = "#ece8e1";
+        this.style.color = "#2E3F5C";
+        this.style.background = "#fff";
+      }
+    });
+    btn.addEventListener("click", function() {
+      btnWrap.querySelectorAll(".flow-btn").forEach(function(fb) {
+        fb.disabled = true;
+        fb.style.opacity = "0.5";
+        fb.style.cursor = "default";
+      });
+      b.action();
+    });
+    btnWrap.appendChild(btn);
+  });
+
+  content.appendChild(bubble);
+  content.appendChild(btnWrap);
+  content.appendChild(time);
+  d.appendChild(av);
+  d.appendChild(content);
+  msgs.appendChild(d);
+  scrollBot();
+  agentState.convHistory.push({role:"model",parts:[{text:text}]});
+}
+
+function focusInput() { document.getElementById("agentInput").focus(); }
+
+function showNewChatBtn(show) {
+  const btn = document.getElementById("newChatBtn");
+  if(btn) btn.style.display = show ? "block" : "none";
+}
+
+function buildWelcomeHTML() {
+  var w = document.createElement("div");
+  w.className = "welcome"; w.id = "agentWelcome";
+  w.innerHTML = "<div class=\"welcome-icon\">\u2764\uFE0F</div>"
+    + "<h2>Hej! Jag \u00e4r er Social Media Agent</h2>"
+    + "<p>Jag kan skapa inl\u00e4gg, svara p\u00e5 kommentarer, skriva om texter och planera ert inneh\u00e5ll \u2014 alltid baserat p\u00e5 Medm\u00e4nniska Sveriges v\u00e4rderingar.</p>"
+    + "<div class=\"welcome-chips\"></div>";
+  var chips = w.querySelector(".welcome-chips");
+  [
+    ["new_post", "\u270D\uFE0F Skapa ett inl\u00e4gg"],
+    ["reply_comment", "\uD83D\uDCAC Svara p\u00e5 kommentar"],
+    ["rewrite", "\u270F\uFE0F Skriv om ett inl\u00e4gg"],
+    ["content_plan", "\uD83D\uDCC5 Inneh\u00e5llsplan"]
+  ].forEach(function(item) {
+    var btn = document.createElement("button");
+    btn.className = "wchip";
+    btn.textContent = item[1];
+    btn.addEventListener("click", function() { agentQuick(item[0]); });
+    chips.appendChild(btn);
+  });
+  return w;
+}
+
+function resetAgent() {
+  // Clear conversation
+  agentState.convHistory = [];
+  agentState.history = [];
+  flow.step = null; flow.mode = null; flow.theme = null; flow.detail = null;
+  // Reset UI
+  const msgs = document.getElementById("agentMessages");
+  msgs.innerHTML = "";
+  msgs.appendChild(buildWelcomeHTML());
+  document.querySelectorAll(".qa-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("agentHistory").innerHTML='<div class="no-hist">Ingen historik ännu</div>';
+  document.getElementById("agentModeLabel").textContent = "";
+  showNewChatBtn(false);
+  document.getElementById("agentInput").value = "";
+}
+
 function agentSendQuick(text) { document.getElementById("agentInput").value=text; agentSend(); }
+function agentSendDirect(text) {
+  if(!shared.apiKey){addAgentMsg("\u26a0\uFE0F Ingen API-nyckel. \u00d6ppna \uD83D\uDD12 Admin.");return;}
+  agentState.lastPrompt = text;
+  addUserBubble(text);
+  const thinking=showThinking();
+  document.getElementById("agentSendBtn").disabled=true;
+  _doAgentCall(text, thinking);
+}
 function agentKey(e) { if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();agentSend();} }
 function autoResize(el) { el.style.height="auto"; el.style.height=Math.min(el.scrollHeight,110)+"px"; }
 function hideWelcome() { const w=document.getElementById("agentWelcome"); if(w)w.style.display="none"; }
@@ -747,10 +996,22 @@ async function agentSend() {
   if(!text)return;
   if(!shared.apiKey){addAgentMsg("⚠️ Ingen API-nyckel. Tryck på 🔒 Admin och ange din Gemini-nyckel.");return;}
   input.value="";input.style.height="auto";
+  showNewChatBtn(true);
+
+  // Handle guided flow steps
+  if(flow.step === "add_detail" && flow.theme) {
+    generateWithTheme(text);
+    return;
+  }
+
   addUserBubble(text);
   const thinking=showThinking();
   document.getElementById("agentSendBtn").disabled=true;
+  await _doAgentCall(text, thinking);
+}
 
+async function _doAgentCall(text, thinking) {
+  agentState.lastPrompt = text;
   try {
     const plats=agentState.platforms.map(p=>p==="instagram"?"Instagram":"Facebook").join(" och ");
     const sysP=`Du är Social Media Agent för Medmänniska Sverige. Kommunicera ENBART på svenska.\n\nBRAND BIBLE:\n${shared.docText}\n\nAKTIVA PLATTFORMAR: ${plats}\n\nDU KAN:\n1. SKAPA INLÄGG — ett per aktiv plattform\n2. SVARA PÅ KOMMENTAR — lämpligt svar i rätt ton\n3. SKRIVA OM INLÄGG — förbättra befintlig text\n4. INNEHÅLLSPLAN — veckoplan med 5-7 inlägg\n5. SAMTALA — råd om kommunikation\n\nSVARA ALLTID med giltig JSON:\nInlägg: {"type":"posts","message":"kommentar","posts":[{"platform":"instagram","text":"...","hashtags":"#tag1 #tag2"},{"platform":"facebook","text":"...","hashtags":"#tag1"}]}\nPlan: {"type":"plan","message":"kommentar","plan":[{"day":"Måndag","theme":"...","platform":"Instagram","description":"..."}]}\nText: {"type":"text","message":"ditt svar"}\n\nHåll inlägg under 600 tecken. Svara ENBART med JSON.`;
@@ -770,10 +1031,84 @@ async function agentSend() {
     else addAgentMsg(parsed.message||parsed.text||"Klart!");
   } catch(e) {
     thinking.remove();
-    addAgentMsg("⚠️ Något gick fel: "+e.message+" — Försök igen.");
+    addErrorWithRetry("\u26a0\uFE0F Något gick fel: " + e.message);
   } finally {
     document.getElementById("agentSendBtn").disabled=false;
   }
+}  // end _doAgentCall
+
+
+async function selfReview(posts){
+  var txt=posts.map(function(p){return p.platform.toUpperCase()+": "+p.text;}).join("\n\n");
+  try{
+    var raw=await callGemini(
+      'Du ar kvalitetsgranskare for Medmanniska Sverige. Svara ENBART med JSON: {"type":"text","message":"..."}',
+      "Granska dessa inlagg mot Brand Bible. Ar tonen ratt? Stammer vardena?\n\n"+txt,[]);
+    var clean=raw.replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim();
+    var parsed;try{parsed=JSON.parse(clean);}catch(_){parsed={message:clean};}
+    var msg=(parsed.message||"").trim();
+    if(!msg)return;
+    var d=document.createElement("div");d.className="msg agent";
+    var av=document.createElement("div");av.className="msg-av";av.textContent="❤️";
+    var content=document.createElement("div");content.className="msg-content";content.style.maxWidth="88%";
+    var lbl=document.createElement("div");
+    lbl.style.cssText="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px";
+    lbl.textContent="Kvalitetsgranskning";
+    var bubble=document.createElement("div");bubble.className="bubble";
+    bubble.style.background="#fffbeb";bubble.style.color="#92400e";bubble.style.borderLeft="3px solid #f59e0b";
+    bubble.textContent=msg;
+    var time=document.createElement("div");time.className="msg-time";time.textContent=now();
+    content.appendChild(lbl);content.appendChild(bubble);content.appendChild(time);
+    d.appendChild(av);d.appendChild(content);
+    document.getElementById("agentMessages").appendChild(d);
+    scrollBot();
+  }catch(_){}
+}
+function addErrorWithRetry(errorText) {
+  var msgs = document.getElementById("agentMessages");
+  var d = document.createElement("div");
+  d.className = "msg agent";
+
+  var av = document.createElement("div");
+  av.className = "msg-av";
+  av.textContent = "\u2764\uFE0F";
+
+  var content = document.createElement("div");
+  content.className = "msg-content";
+  content.style.maxWidth = "88%";
+
+  var bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.style.background = "#fff5f5";
+  bubble.style.color = "#c62828";
+  bubble.textContent = errorText;
+
+  var retryBtn = document.createElement("button");
+  retryBtn.textContent = "\uD83D\uDD04 Försök igen";
+  retryBtn.style.cssText = "margin-top:8px;padding:7px 14px;border-radius:8px;border:1.5px solid #c62828;background:transparent;color:#c62828;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;display:block;transition:all .2s";
+  retryBtn.addEventListener("mouseenter", function() { this.style.background="#c62828"; this.style.color="#fff"; });
+  retryBtn.addEventListener("mouseleave", function() { this.style.background="transparent"; this.style.color="#c62828"; });
+  retryBtn.addEventListener("click", function() {
+    if(!agentState.lastPrompt) return;
+    retryBtn.disabled = true;
+    retryBtn.textContent = "\u23f3 Försöker...";
+    retryBtn.style.opacity = "0.6";
+    var thinking = showThinking();
+    document.getElementById("agentSendBtn").disabled = true;
+    _doAgentCall(agentState.lastPrompt, thinking);
+  });
+
+  var time = document.createElement("div");
+  time.className = "msg-time";
+  time.textContent = now();
+
+  content.appendChild(bubble);
+  content.appendChild(retryBtn);
+  content.appendChild(time);
+  d.appendChild(av);
+  d.appendChild(content);
+  msgs.appendChild(d);
+  scrollBot();
 }
 
 // ── Shared Gemini call ─────────────────────────────────────
@@ -854,6 +1189,26 @@ async function handleDocUpload(e) {
 
 function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function escAttr(s){return String(s||"").replace(/"/g,"&quot;");}
+
+
+// Init welcome chips via JS to avoid onclick quote issues
+(function(){
+  var chips = document.getElementById("welcomeChips");
+  if(!chips) return;
+  var items = [
+    ["new_post", "\u270d\ufe0f Skapa ett inl\u00e4gg"],
+    ["reply_comment", "\U0001f4ac Svara p\u00e5 kommentar"],
+    ["rewrite", "\u270f\ufe0f Skriv om ett inl\u00e4gg"],
+    ["content_plan", "\U0001f4c5 Inneh\u00e5llsplan"]
+  ];
+  items.forEach(function(item){
+    var btn = document.createElement("button");
+    btn.className = "wchip";
+    btn.textContent = item[1];
+    btn.addEventListener("click", function(){ agentQuick(item[0]); });
+    chips.appendChild(btn);
+  });
+})();
 </script>
 </body>
 </html>
