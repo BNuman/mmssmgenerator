@@ -432,7 +432,7 @@ header{background:var(--navy);padding:0 20px;height:58px;display:flex;align-item
 <script>
 
 // ── Constants ──────────────────────────────────────────────
-const APP_VERSION = "4.6.0";
+const APP_VERSION = "4.7.0";
 const APP_DATE    = "2026-06-07";
 
 const BRAND_BIBLE = `MEDMÄNNISKA SVERIGE - FULL AI BRAND BIBLE | VERSION 1.0 | 2026-06-07
@@ -599,8 +599,6 @@ async function runGenerator() {
     }
     if(!parsed||!parsed.posts) throw new Error("Oväntat format. Försök igen.");
     renderGenPosts(parsed.posts);
-    // Show quality indicator in generator
-    setTimeout(function(){ showGenQuality(parsed.posts); }, 600);
   } catch(e) {
     showGenErr("⚠️ " + e.message);
     document.getElementById("genEmpty").style.display = "block";
@@ -626,6 +624,35 @@ function showGenQuality(posts) {
     bar.innerHTML = "<strong style='font-size:10px;text-transform:uppercase;letter-spacing:.06em'>Kvalitetsgranskning</strong><br>" + msg;
     wrap.appendChild(bar);
   }).catch(function(){});
+}
+
+function runGenQuality(idx) {
+  var wrap = document.getElementById("genPosts");
+  var posts = wrap ? wrap._texts : [];
+  var text = posts[idx] || "";
+  var btn = document.getElementById("gq" + idx);
+  var resultDiv = document.getElementById("gqr" + idx);
+  if(!btn || !resultDiv) return;
+  btn.disabled = true;
+  btn.textContent = "⏳...";
+  callGemini(
+    "Du ar kvalitetsgranskare for Medmanniska Sverige. Ge 2-3 meningar konstruktiv feedback pa svenska om inlagget matchar Brand Bibeln. Var specifik.",
+    "Granska detta inlagg: " + text,
+    []
+  ).then(function(raw){
+    btn.disabled = false;
+    btn.textContent = "🔍 Granska";
+    var msg = raw.replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim();
+    // Try parse if JSON
+    try { var p=JSON.parse(msg); msg=p.message||p.feedback||msg; } catch(_){}
+    resultDiv.style.display = "block";
+    resultDiv.innerHTML = '<div style="background:#fffbeb;border-left:3px solid #f59e0b;border-radius:8px;padding:10px 12px;font-size:12px;color:#92400e;line-height:1.6"><strong style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">Kvalitetsgranskning</strong>' + msg + '</div>';
+  }).catch(function(e){
+    btn.disabled = false;
+    btn.textContent = "🔍 Granska";
+    resultDiv.style.display = "block";
+    resultDiv.innerHTML = '<div style="color:#c62828;font-size:12px;padding:8px 12px">Kunde inte granska. Försök igen.</div>';
+  });
 }
 
 function showGenErr(msg) { const el = document.getElementById("genErr"); el.textContent = msg; el.style.display = "block"; }
@@ -661,8 +688,12 @@ function renderGenPosts(posts) {
       <div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${barCol}"></div></div>
       <div class="card-foot">
         <span class="chars">${full.length} / ${m.max}</span>
-        <button class="copy-btn" id="gc${i}" onclick="genCopy(${i})">📋 Kopiera</button>
+        <div style="display:flex;gap:6px">
+          <button class="copy-btn" id="gc${i}" onclick="genCopy(${i})">📋 Kopiera</button>
+          <button class="copy-btn" id="gq${i}" onclick="runGenQuality(${i})" style="border-color:#f59e0b;color:#92400e">🔍 Granska</button>
+        </div>
       </div>
+      <div id="gqr${i}" style="display:none;padding:10px 16px 14px"></div>
       <div class="fallback-area" id="gfb${i}" style="display:none">
         <div class="fallback-label">Markera och kopiera med Ctrl+C / ⌘C:</div>
         <textarea class="fallback-ta" readonly>${escAttr(full)}</textarea>
@@ -968,7 +999,9 @@ function addAgentMsg(text, cards, plan) {
   let extra="";
   if(cards&&cards.length) extra=cards.map(c=>buildAgentCard(c)).join("");
   else if(plan) extra=buildPlanCard(plan);
-  d.innerHTML=`<div class="msg-av">❤️</div><div class="msg-content" style="max-width:88%"><div class="bubble">${text.replace(/\n/g,"<br>")}</div>${extra}<div class="msg-time">${now()}</div></div>`;
+  // Add quality review button if posts
+  const reviewBtn = cards&&cards.length ? `<button onclick="runAgentReview(this,'${encodeURIComponent(JSON.stringify(cards))}')" style="margin-top:8px;padding:6px 14px;border-radius:8px;border:1.5px solid #f59e0b;background:transparent;color:#92400e;font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;display:block">🔍 Granska kvalitet</button><div class="review-result"></div>` : "";
+  d.innerHTML=`<div class="msg-av">❤️</div><div class="msg-content" style="max-width:88%"><div class="bubble">${text.replace(/\n/g,"<br>")}</div>${extra}${reviewBtn}<div class="msg-time">${now()}</div></div>`;
   msgs.appendChild(d); scrollBot();
   agentState.convHistory.push({role:"model",parts:[{text:text+(cards?JSON.stringify(cards):"")+(plan?JSON.stringify(plan):"")}]});
   if(cards&&cards.length) addAgentHistory(cards[0].text.slice(0,55)+"…",cards[0].platform);
@@ -1056,7 +1089,7 @@ async function _doAgentCall(text, thinking) {
       else parsed={type:"text",message:clean};
     }
     thinking.remove();
-    if(parsed.type==="posts"){addAgentMsg(parsed.message||"Här är inläggen!",parsed.posts,null);postHistory.add(parsed.posts,"agent");setTimeout(function(){selfReview(parsed.posts);},900);}
+    if(parsed.type==="posts"){addAgentMsg(parsed.message||"Här är inläggen!",parsed.posts,null);postHistory.add(parsed.posts,"agent");}
     else if(parsed.type==="plan")addAgentMsg(parsed.message||"Här är innehållsplanen!",null,parsed.plan);
     else addAgentMsg(parsed.message||parsed.text||"Klart!");
   } catch(e) {
@@ -1067,6 +1100,28 @@ async function _doAgentCall(text, thinking) {
   }
 }  // end _doAgentCall
 
+
+function runAgentReview(btn, encodedCards) {
+  var cards;
+  try { cards = JSON.parse(decodeURIComponent(encodedCards)); } catch(_) { return; }
+  var text = cards.map(function(c){ return c.platform+": "+c.text; }).join("\n\n");
+  var resultDiv = btn.nextElementSibling;
+  btn.disabled = true; btn.textContent = "⏳ Granskar...";
+  callGemini(
+    "Du ar kvalitetsgranskare for Medmanniska Sverige. Ge 2-3 meningar konstruktiv feedback pa svenska.",
+    "Granska dessa inlagg mot Brand Bibeln: " + text,
+    []
+  ).then(function(raw){
+    btn.disabled = false; btn.textContent = "🔍 Granska kvalitet";
+    var msg = raw.replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim();
+    try { var p=JSON.parse(msg); msg=p.message||p.feedback||msg; } catch(_){}
+    if(resultDiv) {
+      resultDiv.innerHTML = '<div style="margin-top:6px;background:#fffbeb;border-left:3px solid #f59e0b;border-radius:8px;padding:10px 12px;font-size:12px;color:#92400e;line-height:1.6"><strong style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">Kvalitetsgranskning</strong>'+msg+'</div>';
+    }
+  }).catch(function(){
+    btn.disabled = false; btn.textContent = "🔍 Granska kvalitet";
+  });
+}
 
 async function selfReview(posts){
   var txt=posts.map(function(p){return p.platform.toUpperCase()+": "+p.text;}).join("\n\n");
