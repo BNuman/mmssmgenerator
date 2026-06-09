@@ -253,11 +253,16 @@ header{background:var(--navy);padding:0 20px;height:58px;display:flex;align-item
           <div class="doc-meta" id="genDocMeta">Inbyggt · 2026-06-07</div>
         </div>
       </div>
-      <div class="sec-label">Tema</div>
+      <div class="sec-label">Tema <span style="font-size:9px;color:var(--muted);font-weight:400">(välj ett eller flera)</span></div>
       <div class="pills" id="genTheme">
         <button class="pill on" data-v="food">🍲 Matutdelning</button>
         <button class="pill" data-v="volunteer">🙋 Volontärer</button>
         <button class="pill" data-v="general">❤️ Om oss</button>
+        <button class="pill" data-v="event">📅 Event</button>
+        <button class="pill" data-v="story">💛 Berättelse</button>
+        <button class="pill" data-v="donation">🤝 Donationer</button>
+        <button class="pill" data-v="awareness">🌍 Samhällsnytta</button>
+        <button class="pill" data-v="thanks">🙏 Tack & uppskattning</button>
       </div>
       <div class="sec-label">Målgrupp</div>
       <div class="pills" id="genAudience">
@@ -432,7 +437,7 @@ header{background:var(--navy);padding:0 20px;height:58px;display:flex;align-item
 <script>
 
 // ── Constants ──────────────────────────────────────────────
-const APP_VERSION = "4.7.0";
+const APP_VERSION = "5.0.0";
 const APP_DATE    = "2026-06-07";
 
 const BRAND_BIBLE = `MEDMÄNNISKA SVERIGE - FULL AI BRAND BIBLE | VERSION 1.0 | 2026-06-07
@@ -483,7 +488,7 @@ const shared = {
 
 // Generator state
 const genState = {
-  theme: "food",
+  themes: ["food"],
   audiences: ["volunteers","help","donors","public"],
   platforms: ["instagram","facebook"],
   hashtags: true,
@@ -518,8 +523,12 @@ function switchMode(mode) {
 
 // ── Generator pills ────────────────────────────────────────
 document.querySelectorAll("#genTheme .pill").forEach(b => b.addEventListener("click", () => {
-  document.querySelectorAll("#genTheme .pill").forEach(x => x.classList.remove("on"));
-  b.classList.add("on"); genState.theme = b.dataset.v;
+  const v = b.dataset.v;
+  if (genState.themes.includes(v)) {
+    if (genState.themes.length > 1) { genState.themes = genState.themes.filter(x => x !== v); b.classList.remove("on"); }
+  } else {
+    genState.themes.push(v); b.classList.add("on");
+  }
 }));
 document.querySelectorAll("#genAudience .pill").forEach(b => b.addEventListener("click", () => {
   const v = b.dataset.v;
@@ -539,9 +548,14 @@ function toggleAgentPlat(btn) {
 
 // ── Generator ──────────────────────────────────────────────
 const THEME_MAP = {
-  food:"matutdelning och matstöd till behövande i Göteborg",
-  volunteer:"rekrytering av volontärer och frivilligarbete",
-  general:"vad Medmänniska Sverige är och gör"
+  food:      "matutdelning och matstöd till behövande i Göteborg (tors & sön kl 18:00 vid Carl Johans kyrka)",
+  volunteer: "rekrytering av volontärer och frivilligarbete",
+  general:   "vad Medmänniska Sverige är, vår vision och vårt uppdrag",
+  event:     "ett kommande event eller aktivitet",
+  story:     "en personlig berättelse eller upplevelse från vår verksamhet",
+  donation:  "att uppmuntra till donationer och ekonomiskt stöd",
+  awareness: "samhällsnytta och vikten av medmänsklighet i samhället",
+  thanks:    "tacka volontärer, donatorer och alla som stödjer oss"
 };
 const AUD_MAP = {
   volunteers:"potentiella volontärer",
@@ -579,7 +593,7 @@ async function runGenerator() {
   const EMOJI_MAP={none:"Inga emojis.",low:"Max 1-2 emojis.",medium:"3-5 emojis.",high:"6 eller fler emojis."};
   const emojiInstr=EMOJI_MAP[genState.emojiLevel]||EMOJI_MAP.medium;
   const customLine = custom ? ("Inkludera: " + custom) : "";
-  const userP = "Skapa inlagg for Medmanniska Sverige. Tema: " + THEME_MAP[genState.theme] + ". Ton: " + tone + ". Emojis: " + emojiInstr + ". " + (hash==="Inkludera 5–7 hashtags." ? "Med hashtags." : "Utan hashtags.") + " " + customLine + " Generera ETT kort inlagg (max 400 tecken) per plattform. Svara ENBART med JSON utan forklaringar: {\"posts\":[{\"platform\":\"instagram\",\"text\":\"...\",\"hashtags\":\"#tag1 #tag2\"},{\"platform\":\"facebook\",\"text\":\"...\",\"hashtags\":\"#tag1 #tag2\"}]}";
+  const userP = "Skapa inlagg for Medmanniska Sverige. Tema(n): " + genState.themes.map(function(t){return THEME_MAP[t]||t;}).join(" och ") + ". Ton: " + tone + ". Emojis: " + emojiInstr + ". " + (hash==="Inkludera 5–7 hashtags." ? "Med hashtags." : "Utan hashtags.") + " " + customLine + " Generera ETT kort inlagg (max 400 tecken) per plattform. Svara ENBART med JSON utan forklaringar: {\"posts\":[{\"platform\":\"instagram\",\"text\":\"...\",\"hashtags\":\"#tag1 #tag2\"},{\"platform\":\"facebook\",\"text\":\"...\",\"hashtags\":\"#tag1 #tag2\"}]}";
 
   try {
     const raw = await callGemini(systemP, userP, []);
@@ -701,7 +715,7 @@ function renderGenPosts(posts) {
     wrap.appendChild(card);
   });
   // Save to history and show history panel
-  postHistory.add(posts, genState.theme + "/" + genState.platforms.join("+"));
+  postHistory.add(posts, genState.themes.join("+") + "/" + genState.platforms.join("+"));
   showHistory();
 }
 
@@ -1000,7 +1014,19 @@ function addAgentMsg(text, cards, plan) {
   if(cards&&cards.length) extra=cards.map(c=>buildAgentCard(c)).join("");
   else if(plan) extra=buildPlanCard(plan);
   // Add quality review button if posts
-  const reviewBtn = cards&&cards.length ? `<button onclick="runAgentReview(this,'${encodeURIComponent(JSON.stringify(cards))}')" style="margin-top:8px;padding:6px 14px;border-radius:8px;border:1.5px solid #f59e0b;background:transparent;color:#92400e;font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;display:block">🔍 Granska kvalitet</button><div class="review-result"></div>` : "";
+  const editId = "edit_" + Date.now();
+  const reviewBtn = cards&&cards.length ? `
+    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+      <button onclick="runAgentReview(this,'${encodeURIComponent(JSON.stringify(cards))}')" style="padding:6px 12px;border-radius:8px;border:1.5px solid #f59e0b;background:transparent;color:#92400e;font-size:11px;font-weight:600;font-family:inherit;cursor:pointer">🔍 Granska</button>
+      <button onclick="showEditInput('${editId}')" style="padding:6px 12px;border-radius:8px;border:1.5px solid var(--navy-mid);background:transparent;color:var(--navy-mid);font-size:11px;font-weight:600;font-family:inherit;cursor:pointer">✏️ Redigera</button>
+    </div>
+    <div class="review-result"></div>
+    <div id="${editId}" style="display:none;margin-top:8px">
+      <div style="display:flex;gap:6px">
+        <input type="text" placeholder="T.ex. gör den varmare och kortare…" style="flex:1;padding:7px 11px;border-radius:8px;border:1.5px solid var(--grey);font-size:12px;font-family:inherit;outline:none" onkeydown="if(event.key==='Enter')submitEdit(this)">
+        <button onclick="submitEdit(this.previousElementSibling)" style="padding:7px 12px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer">Skicka</button>
+      </div>
+    </div>` : "";
   d.innerHTML=`<div class="msg-av">❤️</div><div class="msg-content" style="max-width:88%"><div class="bubble">${text.replace(/\n/g,"<br>")}</div>${extra}${reviewBtn}<div class="msg-time">${now()}</div></div>`;
   msgs.appendChild(d); scrollBot();
   agentState.convHistory.push({role:"model",parts:[{text:text+(cards?JSON.stringify(cards):"")+(plan?JSON.stringify(plan):"")}]});
@@ -1077,7 +1103,28 @@ async function _doAgentCall(text, thinking) {
   agentState.lastPrompt = text;
   try {
     const plats=agentState.platforms.map(p=>p==="instagram"?"Instagram":"Facebook").join(" och ");
-    const sysP=`Du är Social Media Agent för Medmänniska Sverige. Kommunicera ENBART på svenska.\n\nBRAND BIBLE:\n${shared.docText}\n\nAKTIVA PLATTFORMAR: ${plats}\n\nDU KAN:\n1. SKAPA INLÄGG — ett per aktiv plattform\n2. SVARA PÅ KOMMENTAR — lämpligt svar i rätt ton\n3. SKRIVA OM INLÄGG — förbättra befintlig text\n4. INNEHÅLLSPLAN — veckoplan med 5-7 inlägg\n5. SAMTALA — råd om kommunikation\n\nSVARA ALLTID med giltig JSON:\nInlägg: {"type":"posts","message":"kommentar","posts":[{"platform":"instagram","text":"...","hashtags":"#tag1 #tag2"},{"platform":"facebook","text":"...","hashtags":"#tag1"}]}\nPlan: {"type":"plan","message":"kommentar","plan":[{"day":"Måndag","theme":"...","platform":"Instagram","description":"..."}]}\nText: {"type":"text","message":"ditt svar"}\n\nHåll inlägg under 600 tecken. Svara ENBART med JSON.`;
+    const sysP=`Du är Social Media Agent för Medmänniska Sverige. Kommunicera ENBART på svenska.
+
+BRAND BIBLE:
+${shared.docText}
+
+AKTIVA PLATTFORMAR: ${plats}
+
+DU KAN:
+1. SKAPA INLÄGG — ett per aktiv plattform
+2. SVARA PÅ KOMMENTAR — lämpligt svar i rätt ton
+3. SKRIVA OM/REDIGERA INLÄGG — om användaren ber om ändringar (t.ex. "gör den varmare", "ändra tonen", "lägg till emoji") ska du returnera förbättrade versioner av de senaste inläggen
+4. INNEHÅLLSPLAN — veckoplan med 5-7 inlägg
+5. SAMTALA — råd om kommunikation
+
+VIKTIGT OM REDIGERING: Om konversationshistoriken innehåller inlägg och användaren ber om ändringar, returnera ALLTID nya förbättrade versioner av inläggen med type "posts". Tolka redigeringsbegäran generöst — "varmare", "mer energi", "kortare", "lägg till hashtags" etc.
+
+SVARA ALLTID med giltig JSON:
+Inlägg/Redigerat: {"type":"posts","message":"kommentar","posts":[{"platform":"instagram","text":"...","hashtags":"#tag1 #tag2"},{"platform":"facebook","text":"...","hashtags":"#tag1"}]}
+Plan: {"type":"plan","message":"kommentar","plan":[{"day":"Måndag","theme":"...","platform":"Instagram","description":"..."}]}
+Text: {"type":"text","message":"ditt svar"}
+
+Håll inlägg under 600 tecken. Svara ENBART med JSON.`;
 
     const raw=await callGemini(sysP, text, agentState.convHistory.slice(-8));
     const clean=raw.replace(/\`\`\`json\s*/gi,"").replace(/\`\`\`\s*/g,"").trim();
@@ -1100,6 +1147,31 @@ async function _doAgentCall(text, thinking) {
   }
 }  // end _doAgentCall
 
+
+function showEditInput(id) {
+  var el = document.getElementById(id);
+  if(!el) return;
+  el.style.display = el.style.display === "none" ? "block" : "none";
+  if(el.style.display === "block") {
+    var inp = el.querySelector("input");
+    if(inp) setTimeout(function(){ inp.focus(); }, 50);
+  }
+}
+
+function submitEdit(input) {
+  var val = input ? input.value.trim() : "";
+  if(!val) return;
+  // Put edit instruction in chat input and send
+  var chatInp = document.getElementById("agentInput");
+  if(chatInp) {
+    chatInp.value = "Redigera de senaste inläggen: " + val;
+    agentSend();
+    input.value = "";
+    // Hide edit panel
+    var parent = input.closest("[id^='edit_']");
+    if(parent) parent.style.display = "none";
+  }
+}
 
 function runAgentReview(btn, encodedCards) {
   var cards;
